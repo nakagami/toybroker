@@ -32,22 +32,19 @@ import (
 func MqttMainLoop(conn net.Conn) {
 	command, _, remaining, err := readMessage(conn)
 	if command != CONNECT || err != nil {
-		peer.WriteChan <- packCONNACK(CONNACK_Rejected)
+		sendToClientConn(packCONNACK(CONNACK_Rejected))
 		return
 	}
 	clientID, _, _, loginName, loginPassword, err := unpackCONNECT(remaining)
-	status := login.Login(clientID, loginName, loginPassword)
-
-	peer.WriteChan <- packCONNACK(status)
-	clients.Open(clientID, peer)
+	status := login(clientID, loginName, loginPassword)
+    sendToClientID(packCONNACK(status), clientID)
 
 	fmt.Println("clientID=", clientID)
-	go mqttWriter(peer)
 
 	for {
-		command, _, remaining, err = peer.ReadMessage()
+		command, _, remaining, err = readMessage()
 		if err != nil {
-			clients.Close(clientID, peer)
+			logout(clientID)
 			break
 		}
 		switch command {

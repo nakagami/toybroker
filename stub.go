@@ -24,8 +24,13 @@ SOFTWARE.
 
 package toybroker
 
+import (
+    "net"
+)
 
-func login(clientID string, loginName string, loginPassword string) bool {
+
+func login(clientID string, loginName string, loginPassword string) byte {
+    return CONNACK_Success
 }
 
 func logout(clientID string) {
@@ -39,6 +44,10 @@ func getClientListByTopic(topicName string) []string {
     return []string {}
 }
 
-func sendMessageTo(message []byte, clientID string) bool {
+func sendToClientID(data []byte, clientID string) bool {
     return true
+}
+
+func sendToClientConn(data[] data, conn net.Conn) {
+    conn.Send(data)
 }
