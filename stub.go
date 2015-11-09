@@ -25,29 +25,36 @@ SOFTWARE.
 package toybroker
 
 import (
-    "net"
+	"net"
 )
 
-
 func login(clientID string, loginName string, loginPassword string) byte {
-    return CONNACK_Success
+	return CONNACK_Success
 }
 
 func logout(clientID string) {
 }
 
-func getNextMessageId(clientID string) int16 {
-    return 1;
+func getNextMessageID(clientID string) uint16 {
+	return 1
 }
 
 func getClientListByTopic(topicName string) []string {
-    return []string {}
+	return []string{}
 }
 
-func sendToClientID(data []byte, clientID string) bool {
-    return true
+func sendToClient(data []byte, clientID string) bool {
+	return true
 }
 
-func sendToClientConn(data[] data, conn net.Conn) {
-    conn.Send(data)
+func sendToConn(data []byte, conn net.Conn) {
+	conn.Write(data)
+}
+
+func subscribe(topicID string, clientID string) byte {
+	return 0 // QoS
+}
+
+func unsubscribe(topicID string, clientID string) {
+	return
 }

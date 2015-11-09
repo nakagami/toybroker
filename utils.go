@@ -27,12 +27,9 @@ package toybroker
 import (
 	"bytes"
 	"encoding/binary"
+	"errors"
+	"net"
 )
-
-type TopicQos struct {
-	TopicID string
-	Qos     byte
-}
 
 func bytes_to_uint16(b []byte) uint16 {
 	var val uint16
@@ -49,11 +46,6 @@ func str_to_bytes(s string) []byte {
 	b := bytes.NewBufferString(s).Bytes()
 	ln := len(b)
 	return bytes.Join([][]byte{[]byte{byte(ln / 256), byte(ln)}, b}, nil)
-}
-
-func getNextMessageID(user string) uint16 {
-	// TODO: Generate message ID
-	return 1
 }
 
 func encodeRemainLength(x int) []byte {
@@ -188,15 +180,14 @@ func unpackPUBACK(remaining []byte) (messageID uint16, err error) {
 	return
 }
 
-func unpackSUBSCRIBE(remaining []byte) (messageID uint16, topics []TopicQos, err error) {
+func unpackSUBSCRIBE(remaining []byte) (messageID uint16, topics []string, err error) {
 	messageID = bytes_to_uint16(remaining[0:2])
-	topics = make([]TopicQos, len(remaining)/2)
+	topics = make([]string, len(remaining)/2)
 
 	n := 0
 	for i := 2; i < len(remaining); {
 		ln := int(bytes_to_uint16(remaining[i : i+2]))
-		topics[n].TopicID = bytes_to_str(remaining[i+2 : i+2+ln])
-		topics[n].Qos = remaining[i+2+ln]
+		topics[n] = bytes_to_str(remaining[i+2 : i+2+ln])
 		n++
 		i += 2 + ln + 1
 	}
@@ -220,41 +211,40 @@ func unpackUNSUBSCRIBE(remaining []byte) (messageID uint16, topics []string, err
 	return
 }
 
-
 func readMessage(conn net.Conn) (command int, fixedHeader []byte, remaining []byte, err error) {
-    fixedHeader = make([]byte, 5)
-    n, err := peer.conn.Read(fixedHeader[0:1])
-    if err != nil && n < 1 {
-        err = errors.New("Can't read packets")
-    }
-    if err != nil {
-        return
-    }
+	fixedHeader = make([]byte, 5)
+	n, err := conn.Read(fixedHeader[0:1])
+	if err != nil && n < 1 {
+		err = errors.New("Can't read packets")
+	}
+	if err != nil {
+		return
+	}
 
-    var i int
-    for i = 0; i < 4; i++ {
-        n, err := peer.conn.Read(fixedHeader[i+1 : i+2])
-        if err != nil && n < 1 {
-            err = errors.New("Can't read packets")
-        }
-        if err != nil {
-            break
-        }
-        if fixedHeader[i+1] <= 127 {
-            break
-        }
-    }
-    if err != nil {
-        return
-    }
+	var i int
+	for i = 0; i < 4; i++ {
+		n, err := conn.Read(fixedHeader[i+1 : i+2])
+		if err != nil && n < 1 {
+			err = errors.New("Can't read packets")
+		}
+		if err != nil {
+			break
+		}
+		if fixedHeader[i+1] <= 127 {
+			break
+		}
+	}
+	if err != nil {
+		return
+	}
 
-    fixedHeader = fixedHeader[0 : i+2]
-    remainLength := decodeRemainLength(fixedHeader[1:])
+	fixedHeader = fixedHeader[0 : i+2]
+	remainLength := decodeRemainLength(fixedHeader[1:])
 
-    remaining = make([]byte, remainLength)
-    peer.conn.Read(remaining)
+	remaining = make([]byte, remainLength)
+	conn.Read(remaining)
 
-    command = int(fixedHeader[0] / 16)
+	command = int(fixedHeader[0] / 16)
 
-    return
+	return
 }

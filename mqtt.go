@@ -25,24 +25,24 @@ SOFTWARE.
 package toybroker
 
 import (
-    "net"
 	"fmt"
+	"net"
 )
 
 func MqttMainLoop(conn net.Conn) {
 	command, _, remaining, err := readMessage(conn)
 	if command != CONNECT || err != nil {
-		sendToClientConn(packCONNACK(CONNACK_Rejected))
+		sendToConn(packCONNACK(CONNACK_Rejected), conn)
 		return
 	}
 	clientID, _, _, loginName, loginPassword, err := unpackCONNECT(remaining)
 	status := login(clientID, loginName, loginPassword)
-    sendToClientID(packCONNACK(status), clientID)
+	sendToClient(packCONNACK(status), clientID)
 
 	fmt.Println("clientID=", clientID)
 
 	for {
-		command, _, remaining, err = readMessage()
+		command, _, remaining, err = readMessage(conn)
 		if err != nil {
 			logout(clientID)
 			break
@@ -52,54 +52,43 @@ func MqttMainLoop(conn net.Conn) {
 			fmt.Println("PUBLISH")
 			topic, messageID, payload, err := unpackPUBLISH(remaining)
 			fmt.Println(topic, messageID, payload, err)
-			target_clients := messages.CreateMessages(clientID, messageID, topics.GetClients(topic), payload)
 
-			for _, c := range target_clients {
-				peer := clients.GetPeer(c.ClientID)
-				if peer != nil {
-					peer.WriteChan <- packPUBLISH(topic, 1, payload)
-				}
+			for _, clientID := range getClientListByTopic(topic) {
+				messageID = getNextMessageID(clientID)
+				data := packPUBLISH(topic, messageID, payload)
+				sendToClient(data, clientID)
 			}
 		case PUBACK:
 			fmt.Println("PUBACK")
-			messageID, _ := unpackPUBACK(remaining)
-			ackClientID, ackMessageID := messages.RecvPUBACK(clientID, messageID)
-			if ackMessageID != 0 {
-				ackPeer := clients.GetPeer(ackClientID)
-				if ackPeer != nil {
-					ackPeer.WriteChan <- packPUBACK(ackMessageID)
-				}
-			}
 		case PUBREL:
 			fmt.Println("PUBREL")
-			messageID, _ := unpackPUBREL(remaining)
-			peer.WriteChan <- packPUBCOMP(messageID)
 		case SUBSCRIBE:
 			fmt.Println("SUBSCRIBE")
 			messageID, subscribe_topics, err := unpackSUBSCRIBE(remaining)
-			fmt.Println(messageID, topics, err)
+			fmt.Println(messageID, subscribe_topics, err)
 			qos := make([]byte, len(subscribe_topics))
 			for i, topic := range subscribe_topics {
-				qos[i] = topics.Subscribe(topic.TopicID, clientID, topic.Qos)
+				qos[i] = subscribe(topic, clientID)
 			}
-			peer.WriteChan <- packSUBACK(messageID, qos)
+			sendToClient(packSUBACK(messageID, qos), clientID)
+
 		case UNSUBSCRIBE:
 			fmt.Println("UNSUBSCRIBE")
 			messageID, unsubscribe_topics, err := unpackUNSUBSCRIBE(remaining)
 			fmt.Println(messageID, unsubscribe_topics, err)
 			for _, topic := range unsubscribe_topics {
-				topics.Unsubscribe(topic, clientID)
+				unsubscribe(topic, clientID)
 			}
 		case PINGREQ:
 			fmt.Println("PINGREQ")
-			peer.WriteChan <- packPINGRESP()
+			sendToClient(packPINGRESP(), clientID)
 		case DISCONNECT:
 			fmt.Println("DISCONNECT")
-			clients.Close(clientID, peer)
+			logout(clientID)
 			break
 		default:
 			fmt.Println("Invalid Command")
-			clients.Close(clientID, peer)
+			logout(clientID)
 			break
 		}
 	}
