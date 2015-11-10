@@ -133,6 +133,7 @@ func packPINGRESP() []byte {
 /* Unpack recieve data */
 
 func unpackCONNECT(remaining []byte) (clientID string, willTopic string, willMessage string, loginName string, loginPassword string, err error) {
+    // FIXME:
 	connectFlag := remaining[9]
 	usernameFlag := (connectFlag & 0x80) != 0
 	passwordFlag := (connectFlag & 0x40) != 0
