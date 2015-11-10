@@ -29,6 +29,8 @@ import (
 )
 
 func main() {
+	initialize_stub()
+
 	listener, _ := net.Listen("tcp", ":1883")
 	for {
 		conn, _ := listener.Accept()

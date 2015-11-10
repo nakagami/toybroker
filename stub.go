@@ -28,6 +28,9 @@ import (
 	"net"
 )
 
+func initialize_stub() {
+}
+
 func login(clientID string, loginName string, loginPassword string) byte {
 	return CONNACK_Success
 }

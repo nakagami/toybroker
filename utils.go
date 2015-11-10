@@ -133,19 +133,18 @@ func packPINGRESP() []byte {
 /* Unpack recieve data */
 
 func unpackCONNECT(remaining []byte) (clientID string, willTopic string, willMessage string, loginName string, loginPassword string, err error) {
-    // FIXME:
-	connectFlag := remaining[9]
+	n := 2 + int(bytes_to_uint16(remaining[0:2]))
+	protocolVersion := int(remaining[n])
+	n++
+	connectFlag := remaining[n]
 	usernameFlag := (connectFlag & 0x80) != 0
 	passwordFlag := (connectFlag & 0x40) != 0
-	/*
-	   willRetain := (connectFlag & 0x20) != 0
-	   qos := byte((connectFlag / 4) & 0x04)
-	   willFlag := (connectFlag & 0x02) != 0
-	   cleanSession := (connectFlag & 0x01) != 0
-	   keepAliveTime := bytes_to_uint16(remaining[10:12])
-	*/
+	willRetain := (connectFlag & 0x20) != 0
+	qos := byte((connectFlag / 4) & 0x04)
+	willFlag := (connectFlag & 0x02) != 0
+	cleanSession := (connectFlag & 0x01) != 0
+	keepAliveTime := bytes_to_uint16(remaining[10:12])
 
-	n := 12
 	ln := int(bytes_to_uint16(remaining[n : n+2]))
 	clientID = bytes_to_str(remaining[n+2 : n+2+ln])
 
