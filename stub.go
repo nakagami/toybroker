@@ -30,9 +30,15 @@ import (
 	"sync"
 )
 
+var clientMap = cmap.New()
+var topicMap = cmap.New()
+
 // ------------------------------ Client --------------------------------------
 
 type Client struct {
+	clientID      string
+	conn          net.Conn
+	nextMessageID uint16
 	sync.RWMutex
 }
 
