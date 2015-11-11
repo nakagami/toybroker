@@ -28,12 +28,12 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"net"
-    "fmt"
 )
 
 func debugOutput(v string) {
-    fmt.Println(v)
+	fmt.Println(v)
 }
 
 func bytes_to_uint16(b []byte) uint16 {
@@ -140,33 +140,35 @@ func packPINGRESP() []byte {
 func unpackCONNECT(remaining []byte) (clientID string, willTopic string, willMessage string, loginName string, loginPassword string, err error) {
 	n := 2 + int(bytes_to_uint16(remaining[0:2]))
 	protocolVersion := int(remaining[n])
-    debugOutput(string(protocolVersion))
 	n++
 	connectFlag := remaining[n]
 	usernameFlag := (connectFlag & 0x80) != 0
 	passwordFlag := (connectFlag & 0x40) != 0
-	_ = (connectFlag & 0x20) != 0 // willRetain
-	_ = byte((connectFlag / 4) & 0x04)  // qos
-	_ = (connectFlag & 0x02) != 0   // will flag
-	_ = (connectFlag & 0x01) != 0   // clean session
-	_ = bytes_to_uint16(remaining[10:12])   // keep alive time
-
+	_ = (connectFlag & 0x20) != 0      // willRetain
+	_ = byte((connectFlag / 4) & 0x04) // qos
+	_ = (connectFlag & 0x02) != 0      // will flag
+	_ = (connectFlag & 0x01) != 0      // clean session
+	n++
+	keepAliveTime := bytes_to_uint16(remaining[n : n+2]) // keep alive time
+	debugOutput(fmt.Sprintf("unpackCONNECT:protocolVersion=%d,connectFlg=%b,keep_alive=%d", protocolVersion, connectFlag, keepAliveTime))
+	n += 2
 	ln := int(bytes_to_uint16(remaining[n : n+2]))
 	clientID = bytes_to_str(remaining[n+2 : n+2+ln])
-    debugOutput(clientID)
+	debugOutput(fmt.Sprintf("unpackCONNECT:clientID=%s", clientID))
+	n = n + 2 + ln
 
 	if usernameFlag {
-		n += ln
 		ln = int(bytes_to_uint16(remaining[n : n+2]))
 		loginName = bytes_to_str(remaining[n+2 : n+2+ln])
-        debugOutput(loginName)
+		debugOutput(fmt.Sprintf("unpackCONNECT:loginName=%s", loginName))
+		n = n + 2 + ln
 	}
 
 	if passwordFlag {
-		n += ln
 		ln = int(bytes_to_uint16(remaining[n : n+2]))
 		loginPassword = bytes_to_str(remaining[n+2 : n+2+ln])
-        debugOutput(loginPassword)
+		debugOutput(fmt.Sprintf("unpackCONNECT:loginPassword=%s", loginPassword))
+		n += n + 2 + ln
 	}
 
 	return
