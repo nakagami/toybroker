@@ -37,7 +37,10 @@ func MqttMainLoop(conn net.Conn) {
 	}
 	clientID, _, _, loginName, loginPassword, err := unpackCONNECT(remaining)
 	status := login(clientID, loginName, loginPassword)
-	sendToClient(packCONNACK(status), clientID)
+	sendToConn(packCONNACK(status), conn)
+	if status != CONNACK_Success {
+		return
+	}
 
 	for {
 		command, _, remaining, err = readMessage(conn)
