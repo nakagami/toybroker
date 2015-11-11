@@ -63,15 +63,13 @@ func MqttMainLoop(conn net.Conn) {
 		case PUBREL:
 			debugOutput("PUBREL")
 		case SUBSCRIBE:
-			debugOutput("SUBSCRIBE")
 			messageID, subscribe_topics, err := unpackSUBSCRIBE(remaining)
-			debugOutput(fmt.Sprintf("SUBSCRIBE:%v,%s,%d,%v", subscribe_topics, messageID, err))
+			debugOutput(fmt.Sprintf("SUBSCRIBE:%v,%d,%v", subscribe_topics, messageID, err))
 			qos := make([]byte, len(subscribe_topics))
 			for i, topic := range subscribe_topics {
 				qos[i] = subscribe(topic, clientID)
 			}
-			sendToClient(packSUBACK(messageID, qos), clientID)
-
+			sendToConn(packSUBACK(messageID, qos), conn)
 		case UNSUBSCRIBE:
 			messageID, unsubscribe_topics, err := unpackUNSUBSCRIBE(remaining)
 			debugOutput(fmt.Sprintf("UNSUBSCRIBE:%v,%s,%d,%v", unsubscribe_topics, messageID, err))
@@ -80,7 +78,7 @@ func MqttMainLoop(conn net.Conn) {
 			}
 		case PINGREQ:
 			debugOutput("PINGREQ")
-			sendToClient(packPINGRESP(), clientID)
+			sendToConn(packPINGRESP(), conn)
 		case DISCONNECT:
 			debugOutput("DISCONNECT")
 			logout(clientID)
