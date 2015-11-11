@@ -47,9 +47,8 @@ func MqttMainLoop(conn net.Conn) {
 		}
 		switch command {
 		case PUBLISH:
-			fmt.Println("PUBLISH")
 			topic, messageID, payload, err := unpackPUBLISH(remaining)
-			fmt.Println(topic, messageID, payload, err)
+			debugOutput(fmt.Sprintf("PUBLISH:%s,%d,%v,%v", topic, messageID, payload, err))
 
 			for _, clientID := range getClientListByTopic(topic) {
 				messageID = getNextMessageID(clientID)
@@ -57,13 +56,13 @@ func MqttMainLoop(conn net.Conn) {
 				sendToClient(data, clientID)
 			}
 		case PUBACK:
-			fmt.Println("PUBACK")
+			debugOutput("PUBACK")
 		case PUBREL:
-			fmt.Println("PUBREL")
+			debugOutput("PUBREL")
 		case SUBSCRIBE:
-			fmt.Println("SUBSCRIBE")
+			debugOutput("SUBSCRIBE")
 			messageID, subscribe_topics, err := unpackSUBSCRIBE(remaining)
-			fmt.Println(messageID, subscribe_topics, err)
+			debugOutput(fmt.Sprintf("SUBSCRIBE:%v,%s,%d,%v", subscribe_topics, messageID, err))
 			qos := make([]byte, len(subscribe_topics))
 			for i, topic := range subscribe_topics {
 				qos[i] = subscribe(topic, clientID)
@@ -71,21 +70,20 @@ func MqttMainLoop(conn net.Conn) {
 			sendToClient(packSUBACK(messageID, qos), clientID)
 
 		case UNSUBSCRIBE:
-			fmt.Println("UNSUBSCRIBE")
 			messageID, unsubscribe_topics, err := unpackUNSUBSCRIBE(remaining)
-			fmt.Println(messageID, unsubscribe_topics, err)
+			debugOutput(fmt.Sprintf("UNSUBSCRIBE:%v,%s,%d,%v", unsubscribe_topics, messageID, err))
 			for _, topic := range unsubscribe_topics {
 				unsubscribe(topic, clientID)
 			}
 		case PINGREQ:
-			fmt.Println("PINGREQ")
+			debugOutput("PINGREQ")
 			sendToClient(packPINGRESP(), clientID)
 		case DISCONNECT:
-			fmt.Println("DISCONNECT")
+			debugOutput("DISCONNECT")
 			logout(clientID)
 			break
 		default:
-			fmt.Println("Invalid Command")
+			debugOutput("Invalid Command")
 			logout(clientID)
 			break
 		}
