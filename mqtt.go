@@ -72,10 +72,11 @@ func MqttMainLoop(conn net.Conn) {
 			sendToConn(packSUBACK(messageID, qos), conn)
 		case UNSUBSCRIBE:
 			messageID, unsubscribe_topics, err := unpackUNSUBSCRIBE(remaining)
-			debugOutput(fmt.Sprintf("UNSUBSCRIBE:%v,%s,%d,%v", unsubscribe_topics, messageID, err))
+			debugOutput(fmt.Sprintf("UNSUBSCRIBE:%v,%d,%v", unsubscribe_topics, messageID, err))
 			for _, topic := range unsubscribe_topics {
 				unsubscribe(topic, clientID)
 			}
+			sendToConn(packUNSUBACK(messageID), conn)
 		case PINGREQ:
 			debugOutput("PINGREQ")
 			sendToConn(packPINGRESP(), conn)
