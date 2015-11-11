@@ -25,8 +25,61 @@ SOFTWARE.
 package main
 
 import (
+	"github.com/streamrail/concurrent-map"
 	"net"
+	"sync"
 )
+
+// ------------------------------ Client --------------------------------------
+
+type Client struct {
+	sync.RWMutex
+}
+
+// ------------------------------ Topic ---------------------------------------
+
+type Topic struct {
+	Name string
+	m    map[string]bool
+	sync.RWMutex
+}
+
+func NewTopic(name string) *Topic {
+	return &Topic{
+		Name: name,
+		m:    make(map[string]bool),
+	}
+}
+
+func (s *Topic) Add(name string) {
+	s.Lock()
+	defer s.Unlock()
+	s.m[name] = true
+}
+
+func (s *Topic) Remove(name string) {
+	s.Lock()
+	defer s.Unlock()
+	delete(s.m, name)
+}
+
+func (s *Topic) Clear() {
+	s.Lock()
+	defer s.Unlock()
+	s.m = make(map[string]bool)
+}
+
+func (s *Topic) List() []string {
+	s.RLock()
+	defer s.RUnlock()
+	list := make([]string, 0)
+	for item := range s.m {
+		list = append(list, item)
+	}
+	return list
+}
+
+// -----------------------------------------------------------------------
 
 func initialize_stub() {
 }
