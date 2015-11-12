@@ -110,6 +110,12 @@ func getClient(clientID string) *Client {
 	return clientMap[clientID]
 }
 
+func setClient(client *Client) {
+	clientMapMutex.Lock()
+	defer clientMapMutex.Unlock()
+    clientMap[client.GetClientID()] = client
+}
+
 func getNextMessageID(clientID string) uint16 {
 	client := getClient(clientID)
 	return client.GetNextMessageID()

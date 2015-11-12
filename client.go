@@ -44,6 +44,10 @@ func NewClient(id string, c net.Conn, i uint16) *Client {
 	}
 }
 
+func (c *Client) GetClientID() string {
+    return c.clientID
+}
+
 func (c *Client) GetConn() net.Conn {
 	return c.conn
 }
