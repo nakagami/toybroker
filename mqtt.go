@@ -37,6 +37,9 @@ func MqttMainLoop(conn net.Conn) {
 	}
 	clientID, _, _, loginName, loginPassword, err := unpackCONNECT(remaining)
 	status := login(conn, clientID, loginName, loginPassword)
+	client := NewGetClient(clientID, conn, 0)
+	setClient(client)
+
 	sendToConn(packCONNACK(status), conn)
 	if status != CONNACK_Success {
 		return

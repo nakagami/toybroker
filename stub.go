@@ -29,7 +29,6 @@ import (
 	"sync"
 )
 
-
 // ------------------------------ Topic ---------------------------------------
 var topicMapMutex sync.Mutex
 var topicMap map[string]*Topic = make(map[string]*Topic)
@@ -80,7 +79,6 @@ func (s *Topic) List() []string {
 var clientMapMutex sync.Mutex
 var clientMap map[string]*Client = make(map[string]*Client)
 
-
 func initialize_stub() {
 }
 
@@ -113,7 +111,7 @@ func getClient(clientID string) *Client {
 func setClient(client *Client) {
 	clientMapMutex.Lock()
 	defer clientMapMutex.Unlock()
-    clientMap[client.GetClientID()] = client
+	clientMap[client.GetClientID()] = client
 }
 
 func getNextMessageID(clientID string) uint16 {
