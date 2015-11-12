@@ -25,24 +25,45 @@ SOFTWARE.
 package main
 
 import (
-	"github.com/streamrail/concurrent-map"
 	"net"
 	"sync"
 )
 
-var clientMap = cmap.New()
-var topicMap = cmap.New()
 
 // ------------------------------ Client --------------------------------------
+var clientMapMutex sync.Mutex
+var clientMap map[string] *Client = make(map[string] *Client)
 
 type Client struct {
 	clientID      string
 	conn          net.Conn
-	nextMessageID uint16
+	currentMessageID uint16
 	sync.RWMutex
 }
 
+func NewClient(id string, c net.Conn, i uint16) *Client {
+	return &Client{
+		clientID: id,
+        conn: c,
+        currentMessageID: i,
+    }
+}
+
+func (c *Client) GetCurrentMessageID() uint16 {
+    return c.currentMessageID
+}
+
+func (c *Client) GetNextMessageID() uint16 {
+    c.currentMessageID++
+    if c.currentMessageID == 0 {
+        c.currentMessageID++
+    }
+    return c.currentMessageID
+}
+
 // ------------------------------ Topic ---------------------------------------
+var topicMapMutex sync.Mutex
+var topicMap map[string] *Topic = make(map[string] *Topic)
 
 type Topic struct {
 	Name string
@@ -90,7 +111,20 @@ func (s *Topic) List() []string {
 func initialize_stub() {
 }
 
-func login(clientID string, loginName string, loginPassword string) byte {
+func login(conn net.Conn, clientID string, loginName string, loginPassword string) byte {
+    clientMapMutex.Lock()
+    defer clientMapMutex.Unlock()
+    client, is_new := clientMap[loginName]
+    var currentMessageID uint16
+    if !is_new {
+        currentMessageID = client.GetCurrentMessageID()
+    } else {
+        currentMessageID = 1
+    }
+    client = NewClient(clientID, conn, currentMessageID)
+
+    clientMap[loginName] = client
+
 	return CONNACK_Success
 }
 
