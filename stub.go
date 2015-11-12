@@ -29,41 +29,44 @@ import (
 	"sync"
 )
 
-
 // ------------------------------ Client --------------------------------------
 var clientMapMutex sync.Mutex
-var clientMap map[string] *Client = make(map[string] *Client)
+var clientMap map[string]*Client = make(map[string]*Client)
 
 type Client struct {
-	clientID      string
-	conn          net.Conn
+	clientID         string
+	conn             net.Conn
 	currentMessageID uint16
 	sync.RWMutex
 }
 
 func NewClient(id string, c net.Conn, i uint16) *Client {
 	return &Client{
-		clientID: id,
-        conn: c,
-        currentMessageID: i,
-    }
+		clientID:         id,
+		conn:             c,
+		currentMessageID: i,
+	}
+}
+
+func (c *Client) GetConn() net.Conn {
+	return c.conn
 }
 
 func (c *Client) GetCurrentMessageID() uint16 {
-    return c.currentMessageID
+	return c.currentMessageID
 }
 
 func (c *Client) GetNextMessageID() uint16 {
-    c.currentMessageID++
-    if c.currentMessageID == 0 {
-        c.currentMessageID++
-    }
-    return c.currentMessageID
+	c.currentMessageID++
+	if c.currentMessageID == 0 {
+		c.currentMessageID++
+	}
+	return c.currentMessageID
 }
 
 // ------------------------------ Topic ---------------------------------------
 var topicMapMutex sync.Mutex
-var topicMap map[string] *Topic = make(map[string] *Topic)
+var topicMap map[string]*Topic = make(map[string]*Topic)
 
 type Topic struct {
 	Name string
@@ -112,18 +115,18 @@ func initialize_stub() {
 }
 
 func login(conn net.Conn, clientID string, loginName string, loginPassword string) byte {
-    clientMapMutex.Lock()
-    defer clientMapMutex.Unlock()
-    client, is_new := clientMap[loginName]
-    var currentMessageID uint16
-    if !is_new {
-        currentMessageID = client.GetCurrentMessageID()
-    } else {
-        currentMessageID = 1
-    }
-    client = NewClient(clientID, conn, currentMessageID)
+	clientMapMutex.Lock()
+	defer clientMapMutex.Unlock()
+	client, is_new := clientMap[clientID]
+	var currentMessageID uint16
+	if !is_new {
+		currentMessageID = client.GetCurrentMessageID()
+	} else {
+		currentMessageID = 1
+	}
+	client = NewClient(clientID, conn, currentMessageID)
 
-    clientMap[loginName] = client
+	clientMap[clientID] = client
 
 	return CONNACK_Success
 }
@@ -131,8 +134,15 @@ func login(conn net.Conn, clientID string, loginName string, loginPassword strin
 func logout(clientID string) {
 }
 
+func getClient(clientID string) *Client {
+	clientMapMutex.Lock()
+	defer clientMapMutex.Unlock()
+	return clientMap[clientID]
+}
+
 func getNextMessageID(clientID string) uint16 {
-	return 1
+	client := getClient(clientID)
+	return client.GetNextMessageID()
 }
 
 func getClientListByTopic(topicName string) []string {
@@ -140,6 +150,9 @@ func getClientListByTopic(topicName string) []string {
 }
 
 func sendToClient(data []byte, clientID string) bool {
+	client := getClient(clientID)
+	sendToConn(data, client.GetConn())
+
 	return true
 }
 
