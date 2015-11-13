@@ -29,55 +29,9 @@ import (
 	"sync"
 )
 
-// ------------------------------ Topic ---------------------------------------
-var topicMapMutex sync.Mutex
-var topicMap map[string]*Topic = make(map[string]*Topic)
-
-type Topic struct {
-	Name string
-	m    map[string]bool
-	sync.RWMutex
-}
-
-func NewTopic(name string) *Topic {
-	return &Topic{
-		Name: name,
-		m:    make(map[string]bool),
-	}
-}
-
-func (s *Topic) Add(name string) {
-	s.Lock()
-	defer s.Unlock()
-	s.m[name] = true
-}
-
-func (s *Topic) Remove(name string) {
-	s.Lock()
-	defer s.Unlock()
-	delete(s.m, name)
-}
-
-func (s *Topic) Clear() {
-	s.Lock()
-	defer s.Unlock()
-	s.m = make(map[string]bool)
-}
-
-func (s *Topic) List() []string {
-	s.RLock()
-	defer s.RUnlock()
-	list := make([]string, 0)
-	for item := range s.m {
-		list = append(list, item)
-	}
-	return list
-}
-
-// -----------------------------------------------------------------------
-
 var clientMapMutex sync.Mutex
 var clientMap map[string]*Client = make(map[string]*Client)
+var topics *Topics = NewTopics()
 
 func initialize_stub() {
 }
