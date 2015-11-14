@@ -34,13 +34,13 @@ type Topics struct {
 	sync.RWMutex
 }
 
-func NewTopics() *Topics {
-	return &Topics{
+func NewTopics() Topics {
+	return Topics{
 		m: make(map[string]map[string]bool),
 	}
 }
 
-func (t *Topics) Add(topicName string, clientID string) {
+func (t Topics) Add(topicName string, clientID string) {
 	t.Lock()
 	defer t.Unlock()
 	topic, ok := t.m[topicName]
@@ -51,7 +51,7 @@ func (t *Topics) Add(topicName string, clientID string) {
 	topic[clientID] = true
 }
 
-func (t *Topics) Remove(topicName string, clientID string) {
+func (t Topics) Remove(topicName string, clientID string) {
 	t.Lock()
 	defer t.Unlock()
 	topic, ok := t.m[topicName]
@@ -60,7 +60,7 @@ func (t *Topics) Remove(topicName string, clientID string) {
 	}
 }
 
-func (t *Topics) TopicList() []string {
+func (t Topics) TopicList() []string {
 	t.RLock()
 	defer t.RUnlock()
 	list := make([]string, 0)
@@ -71,7 +71,7 @@ func (t *Topics) TopicList() []string {
 	return list
 }
 
-func (t *Topics) List(topicName string) []string {
+func (t Topics) List(topicName string) []string {
 	t.RLock()
 	defer t.RUnlock()
 	list := make([]string, 0)

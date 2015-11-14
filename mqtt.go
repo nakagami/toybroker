@@ -29,7 +29,7 @@ import (
 	"net"
 )
 
-func MqttMainLoop(conn net.Conn, topics *Topics, hook *MemoryHook) {
+func MqttMainLoop(conn net.Conn, topics Topics, hook MemoryHook) {
 	command, _, remaining, err := readMessage(conn)
 	if command != CONNECT || err != nil {
 		conn.Write([]byte{CONNACK * 16, 2, 0, CONNACK_Rejected})

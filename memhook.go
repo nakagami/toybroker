@@ -34,37 +34,37 @@ type MemoryHook struct {
 	clientMapMutex sync.Mutex
 }
 
-func NewMemoryHook() *MemoryHook {
-	return &MemoryHook{
+func NewMemoryHook() MemoryHook {
+	return MemoryHook{
 		clientMap: make(map[string]*Client),
 	}
 }
 
-func (h *MemoryHook) Login(conn net.Conn, clientID string, loginName string, loginPassword string) byte {
+func (h MemoryHook) Login(conn net.Conn, clientID string, loginName string, loginPassword string) byte {
 	return CONNACK_Success
 }
 
-func (h *MemoryHook) Logout(clientID string) {
+func (h MemoryHook) Logout(clientID string) {
 }
 
-func (h *MemoryHook) GetClient(clientID string) *Client {
+func (h MemoryHook) GetClient(clientID string) *Client {
 	h.clientMapMutex.Lock()
 	defer h.clientMapMutex.Unlock()
 	return h.clientMap[clientID]
 }
 
-func (h *MemoryHook) SetClient(client *Client) {
+func (h MemoryHook) SetClient(client *Client) {
 	h.clientMapMutex.Lock()
 	defer h.clientMapMutex.Unlock()
 	h.clientMap[client.GetClientID()] = client
 }
 
-func (h *MemoryHook) Subscribe(topics *Topics, topicName string, clientID string) byte {
+func (h MemoryHook) Subscribe(topics Topics, topicName string, clientID string) byte {
 	topics.Add(topicName, clientID)
 	return 0 // QoS
 }
 
-func (h *MemoryHook) Unsubscribe(topics *Topics, topicName string, clientID string) {
+func (h MemoryHook) Unsubscribe(topics Topics, topicName string, clientID string) {
 	topics.Remove(topicName, clientID)
 	return
 }

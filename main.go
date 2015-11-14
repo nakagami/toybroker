@@ -29,8 +29,8 @@ import (
 )
 
 func main() {
-	var topics *Topics = NewTopics()
-    var hook *MemoryHook = NewMemoryHook()
+	var topics Topics = NewTopics()
+	var hook MemoryHook = NewMemoryHook()
 
 	listener, _ := net.Listen("tcp", ":1883")
 	for {
