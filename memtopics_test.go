@@ -27,6 +27,7 @@ package toybroker
 import (
 	"errors"
 	"reflect"
+	"sort"
 	"testing"
 )
 
@@ -41,7 +42,9 @@ func TestTopics(t *testing.T) {
 		err = errors.New("topic.TopicList()")
 	}
 
-	if !reflect.DeepEqual(topics.List("foo/bar"), []string{"client1", "client2"}) {
+	r := topics.List("foo/bar")
+	sort.Strings(r)
+	if !reflect.DeepEqual(r, []string{"client1", "client2"}) {
 		err = errors.New("topics.List(\"foo/bar\")")
 	}
 
