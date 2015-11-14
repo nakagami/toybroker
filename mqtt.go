@@ -32,19 +32,20 @@ import (
 func MqttMainLoop(conn net.Conn, topics *Topics) {
 	command, _, remaining, err := readMessage(conn)
 	if command != CONNECT || err != nil {
-		sendToConn(packCONNACK(CONNACK_Rejected), conn)
+		conn.Write([]byte{CONNACK * 16, 2, 0, CONNACK_Rejected})
 		return
 	}
 	clientID, _, _, loginName, loginPassword, err := unpackCONNECT(remaining)
 	status := login(conn, clientID, loginName, loginPassword)
-	oldClient := getClient(clientID)
-	newClient := NewClient(clientID, conn, oldClient)
-	setClient(newClient)
-
-	sendToConn(packCONNACK(status), conn)
 	if status != CONNACK_Success {
+		conn.Write([]byte{CONNACK * 16, 2, 0, CONNACK_Rejected})
 		return
 	}
+
+	oldClient := getClient(clientID)
+	client := NewClient(clientID, conn, oldClient)
+	setClient(client)
+	client.Send(packCONNACK(status))
 
 	for {
 		command, _, remaining, err = readMessage(conn)
@@ -58,8 +59,8 @@ func MqttMainLoop(conn net.Conn, topics *Topics) {
 			debugOutput(fmt.Sprintf("PUBLISH:%s,%d,%v,%v", topic, messageID, payload, err))
 
 			for _, clientID := range topics.List(topic) {
-				client := getClient(clientID)
-				client.Publish(topic, payload)
+				target := getClient(clientID)
+				target.Publish(topic, payload)
 			}
 		case PUBACK:
 			debugOutput("PUBACK")
@@ -69,20 +70,20 @@ func MqttMainLoop(conn net.Conn, topics *Topics) {
 			messageID, subscribe_topics, err := unpackSUBSCRIBE(remaining)
 			debugOutput(fmt.Sprintf("SUBSCRIBE:%v,%d,%v", subscribe_topics, messageID, err))
 			qos := make([]byte, len(subscribe_topics))
-			for i, topic := range subscribe_topics {
-				qos[i] = subscribe(topic, clientID)
+			for i, topicName := range subscribe_topics {
+				qos[i] = subscribe(topics, topicName, clientID)
 			}
-			sendToConn(packSUBACK(messageID, qos), conn)
+			client.Send(packSUBACK(messageID, qos))
 		case UNSUBSCRIBE:
 			messageID, unsubscribe_topics, err := unpackUNSUBSCRIBE(remaining)
 			debugOutput(fmt.Sprintf("UNSUBSCRIBE:%v,%d,%v", unsubscribe_topics, messageID, err))
-			for _, topic := range unsubscribe_topics {
-				unsubscribe(topic, clientID)
+			for _, topicName := range unsubscribe_topics {
+				unsubscribe(topics, topicName, clientID)
 			}
-			sendToConn(packUNSUBACK(messageID), conn)
+			client.Send(packUNSUBACK(messageID))
 		case PINGREQ:
 			debugOutput("PINGREQ")
-			sendToConn(packPINGRESP(), conn)
+			client.Send(packPINGRESP())
 		case DISCONNECT:
 			debugOutput("DISCONNECT")
 			logout(clientID)

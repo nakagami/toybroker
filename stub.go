@@ -65,10 +65,12 @@ func sendToConn(data []byte, conn net.Conn) {
 	conn.Write(data)
 }
 
-func subscribe(topicID string, clientID string) byte {
+func subscribe(topics *Topics, topicName string, clientID string) byte {
+	topics.Add(topicName, clientID)
 	return 0 // QoS
 }
 
-func unsubscribe(topicID string, clientID string) {
+func unsubscribe(topics *Topics, topicName string, clientID string) {
+	topics.Remove(topicName, clientID)
 	return
 }
