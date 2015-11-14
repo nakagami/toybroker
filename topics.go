@@ -28,50 +28,58 @@ import (
 	"sync"
 )
 
-
 // ------------------------------ Topic ---------------------------------------
 
 type Topics struct {
-	m    map[string] map[string]bool
+	m map[string]map[string]bool
 	sync.RWMutex
 }
 
-func NewTopics() * Topics {
+func NewTopics() *Topics {
 	return &Topics{
-		m:    make(map[string] map[string]bool),
+		m: make(map[string]map[string]bool),
 	}
 }
 
 func (t *Topics) Add(topicName string, clientID string) {
 	t.Lock()
 	defer t.Unlock()
-    topic, ok := t.m[topicName]
-    if !ok {
-        topic = make(map[string] bool)
-        t.m[topicName] = topic
-    }
+	topic, ok := t.m[topicName]
+	if !ok {
+		topic = make(map[string]bool)
+		t.m[topicName] = topic
+	}
 	topic[clientID] = true
 }
 
 func (t *Topics) Remove(topicName string, clientID string) {
 	t.Lock()
 	defer t.Unlock()
-    topic, ok := t.m[topicName]
-    if ok {
-	    delete(topic, clientID)
-    }
+	topic, ok := t.m[topicName]
+	if ok {
+		delete(topic, clientID)
+	}
+}
+
+func (t *Topics) TopicList() []string {
+	t.RLock()
+	defer t.RUnlock()
+	list := make([]string, 0)
+	for k, _ := range t.m {
+		list = append(list, k)
+	}
+	return list
 }
 
 func (t *Topics) List(topicName string) []string {
 	t.RLock()
 	defer t.RUnlock()
 	list := make([]string, 0)
-    topic, ok := t.m[topicName]
-    if ok {
-    	for item := range topic {
-    		list = append(list, item)
-    	}
-    }
+	topic, ok := t.m[topicName]
+	if ok {
+		for item := range topic {
+			list = append(list, item)
+		}
+	}
 	return list
 }
-

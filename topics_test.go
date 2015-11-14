@@ -26,16 +26,16 @@ package main
 
 import (
 	"errors"
-    "reflect"
+	"reflect"
 	"testing"
 )
 
 func TestTopics(t *testing.T) {
 	var err error
-    topics := NewTopics()
-    topics.Add("foo/bar", "client1")
-    topics.Add("foo/bar", "client2")
-    topics.Add("foo/baz", "client1")
+	topics := NewTopics()
+	topics.Add("foo/bar", "client1")
+	topics.Add("foo/bar", "client2")
+	topics.Add("foo/baz", "client1")
 
 	if !reflect.DeepEqual(topics.List("foo/bar"), []string{"client1", "client2"}) {
 		err = errors.New("topic.List(\"boo/bar\")")
@@ -45,7 +45,7 @@ func TestTopics(t *testing.T) {
 		err = errors.New("topic.List(\"foo/baz\")")
 	}
 
-    topics.Remove("foo/bar", "client1")
+	topics.Remove("foo/bar", "client1")
 	if !reflect.DeepEqual(topics.List("foo/bar"), []string{"client2"}) {
 		err = errors.New("Remove(\"boo/bar\", \"client1\")")
 	}
@@ -54,4 +54,3 @@ func TestTopics(t *testing.T) {
 		t.Error(err.Error())
 	}
 }
-
