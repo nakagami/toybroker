@@ -31,7 +31,6 @@ import (
 
 var clientMapMutex sync.Mutex
 var clientMap map[string]*Client = make(map[string]*Client)
-var topics *Topics = NewTopics()
 
 func initialize_stub() {
 }

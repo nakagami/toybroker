@@ -29,7 +29,7 @@ import (
 	"net"
 )
 
-func MqttMainLoop(conn net.Conn) {
+func MqttMainLoop(conn net.Conn, topics *Topics) {
 	command, _, remaining, err := readMessage(conn)
 	if command != CONNECT || err != nil {
 		sendToConn(packCONNACK(CONNACK_Rejected), conn)
