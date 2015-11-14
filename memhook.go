@@ -48,15 +48,15 @@ func (h *MemoryHook) Logout(clientID string) {
 }
 
 func (h *MemoryHook) GetClient(clientID string) *Client {
-	clientMapMutex.Lock()
-	defer clientMapMutex.Unlock()
-	return clientMap[clientID]
+	h.clientMapMutex.Lock()
+	defer h.clientMapMutex.Unlock()
+	return h.clientMap[clientID]
 }
 
 func (h *MemoryHook) SetClient(client *Client) {
-	clientMapMutex.Lock()
-	defer clientMapMutex.Unlock()
-	clientMap[client.GetClientID()] = client
+	h.clientMapMutex.Lock()
+	defer h.clientMapMutex.Unlock()
+	h.clientMap[client.GetClientID()] = client
 }
 
 func (h *MemoryHook) Subscribe(topics *Topics, topicName string, clientID string) byte {

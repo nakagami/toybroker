@@ -29,7 +29,6 @@ import (
 )
 
 func main() {
-	initialize_stub()
 	var topics *Topics = NewTopics()
     var hook *MemoryHook = NewMemoryHook()
 
