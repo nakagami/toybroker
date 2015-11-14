@@ -22,11 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 *******************************************************************************/
 
-package toybroker
+package main
 
-type Topics interface {
-	Add(topicName string, clientID string)
-	Remove(topicName string, clientID string)
-	TopicList() []string
-	List(topicName string) []string
+import (
+	"net"
+    "../../toybroker"
+)
+
+func main() {
+	var topics toybroker.Topics = toybroker.NewMemoryTopics()
+	var hook toybroker.Hook = toybroker.NewMemoryHook()
+
+	listener, _ := net.Listen("tcp", ":1883")
+	for {
+		conn, _ := listener.Accept()
+		go toybroker.MqttMainLoop(conn, topics, hook)
+	}
 }

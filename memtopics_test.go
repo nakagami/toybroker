@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 *******************************************************************************/
 
-package main
+package toybroker
 
 import (
 	"errors"
@@ -32,7 +32,7 @@ import (
 
 func TestTopics(t *testing.T) {
 	var err error
-	topics := NewTopics()
+	topics := NewMemoryTopics()
 	topics.Add("foo/bar", "client1")
 	topics.Add("foo/bar", "client2")
 	topics.Add("foo/baz", "client1")
