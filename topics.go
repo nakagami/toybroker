@@ -24,62 +24,9 @@ SOFTWARE.
 
 package main
 
-import (
-	"sort"
-	"sync"
-)
-
-type MemoryTopics struct {
-	m map[string]map[string]bool
-	sync.RWMutex
-}
-
-func NewMemoryTopics() MemoryTopics {
-	return MemoryTopics{
-		m: make(map[string]map[string]bool),
-	}
-}
-
-func (t MemoryTopics) Add(topicName string, clientID string) {
-	t.Lock()
-	defer t.Unlock()
-	topic, ok := t.m[topicName]
-	if !ok {
-		topic = make(map[string]bool)
-		t.m[topicName] = topic
-	}
-	topic[clientID] = true
-}
-
-func (t MemoryTopics) Remove(topicName string, clientID string) {
-	t.Lock()
-	defer t.Unlock()
-	topic, ok := t.m[topicName]
-	if ok {
-		delete(topic, clientID)
-	}
-}
-
-func (t MemoryTopics) TopicList() []string {
-	t.RLock()
-	defer t.RUnlock()
-	list := make([]string, 0)
-	for k, _ := range t.m {
-		list = append(list, k)
-	}
-	sort.Strings(list)
-	return list
-}
-
-func (t MemoryTopics) List(topicName string) []string {
-	t.RLock()
-	defer t.RUnlock()
-	list := make([]string, 0)
-	topic, ok := t.m[topicName]
-	if ok {
-		for item := range topic {
-			list = append(list, item)
-		}
-	}
-	return list
+type Topics interface {
+	Add(topicName string, clientID string)
+	Remove(topicName string, clientID string)
+	TopicList() []string
+	List(topicName string) []string
 }

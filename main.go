@@ -29,7 +29,7 @@ import (
 )
 
 func main() {
-	var topics Topics = NewTopics()
+	var topics Topics = NewMemoryTopics()
 	var hook Hook = NewMemoryHook()
 
 	listener, _ := net.Listen("tcp", ":1883")
