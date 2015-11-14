@@ -25,6 +25,7 @@ SOFTWARE.
 package main
 
 import (
+	"sort"
 	"sync"
 )
 
@@ -68,6 +69,7 @@ func (t *Topics) TopicList() []string {
 	for k, _ := range t.m {
 		list = append(list, k)
 	}
+	sort.Strings(list)
 	return list
 }
 

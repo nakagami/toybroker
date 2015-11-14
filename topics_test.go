@@ -37,8 +37,12 @@ func TestTopics(t *testing.T) {
 	topics.Add("foo/bar", "client2")
 	topics.Add("foo/baz", "client1")
 
+	if !reflect.DeepEqual(topics.TopicList(), []string{"foo/bar", "foo/baz"}) {
+		err = errors.New("topic.TopicList()")
+	}
+
 	if !reflect.DeepEqual(topics.List("foo/bar"), []string{"client1", "client2"}) {
-		err = errors.New("topic.List(\"boo/bar\")")
+		err = errors.New("topic.List(\"foo/bar\")")
 	}
 
 	if !reflect.DeepEqual(topics.List("foo/baz"), []string{"client1"}) {
