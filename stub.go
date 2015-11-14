@@ -54,17 +54,6 @@ func setClient(client *Client) {
 	clientMap[client.GetClientID()] = client
 }
 
-func sendToClient(data []byte, clientID string) bool {
-	client := getClient(clientID)
-	sendToConn(data, client.GetConn())
-
-	return true
-}
-
-func sendToConn(data []byte, conn net.Conn) {
-	conn.Write(data)
-}
-
 func subscribe(topics *Topics, topicName string, clientID string) byte {
 	topics.Add(topicName, clientID)
 	return 0 // QoS
