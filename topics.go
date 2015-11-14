@@ -29,8 +29,6 @@ import (
 	"sync"
 )
 
-// ------------------------------ Topic ---------------------------------------
-
 type Topics struct {
 	m map[string]map[string]bool
 	sync.RWMutex
