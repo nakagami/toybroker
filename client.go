@@ -36,30 +36,42 @@ type Client struct {
 	sync.RWMutex
 }
 
-func NewClient(id string, c net.Conn, i uint16) *Client {
-	return &Client{
-		clientID:         id,
-		conn:             c,
-		currentMessageID: i,
+func NewClient(id string, c net.Conn, oldClient *Client) *Client {
+	client := &Client{
+		clientID: id,
+		conn:     c,
 	}
+	return client
 }
 
 func (c *Client) GetClientID() string {
+	c.RLock()
+	defer c.RUnlock()
 	return c.clientID
 }
 
 func (c *Client) GetConn() net.Conn {
+	c.RLock()
+	defer c.RUnlock()
 	return c.conn
 }
 
-func (c *Client) GetCurrentMessageID() uint16 {
-	return c.currentMessageID
-}
-
-func (c *Client) GetNextMessageID() uint16 {
+func (c *Client) getNextMessageID() uint16 {
 	c.currentMessageID++
 	if c.currentMessageID == 0 {
 		c.currentMessageID++
 	}
 	return c.currentMessageID
+}
+
+func (c *Client) Publish(topic string, payload []byte) {
+	c.Lock()
+	defer c.Unlock()
+	c.conn.Write(packPUBLISH(topic, c.getNextMessageID(), payload))
+}
+
+func (c *Client) Send(data []byte) {
+	c.Lock()
+	defer c.Unlock()
+	c.conn.Write(data)
 }

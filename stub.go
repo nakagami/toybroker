@@ -37,19 +37,6 @@ func initialize_stub() {
 }
 
 func login(conn net.Conn, clientID string, loginName string, loginPassword string) byte {
-	clientMapMutex.Lock()
-	defer clientMapMutex.Unlock()
-	client, is_new := clientMap[clientID]
-	var currentMessageID uint16
-	if !is_new {
-		currentMessageID = client.GetCurrentMessageID()
-	} else {
-		currentMessageID = 1
-	}
-	client = NewClient(clientID, conn, currentMessageID)
-
-	clientMap[clientID] = client
-
 	return CONNACK_Success
 }
 
@@ -66,11 +53,6 @@ func setClient(client *Client) {
 	clientMapMutex.Lock()
 	defer clientMapMutex.Unlock()
 	clientMap[client.GetClientID()] = client
-}
-
-func getNextMessageID(clientID string) uint16 {
-	client := getClient(clientID)
-	return client.GetNextMessageID()
 }
 
 func getClientListByTopic(topicName string) []string {

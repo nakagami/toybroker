@@ -37,8 +37,9 @@ func MqttMainLoop(conn net.Conn) {
 	}
 	clientID, _, _, loginName, loginPassword, err := unpackCONNECT(remaining)
 	status := login(conn, clientID, loginName, loginPassword)
-	client := NewClient(clientID, conn, 0)
-	setClient(client)
+	oldClient := getClient(clientID)
+	newClient := NewClient(clientID, conn, oldClient)
+	setClient(newClient)
 
 	sendToConn(packCONNACK(status), conn)
 	if status != CONNACK_Success {
@@ -57,9 +58,8 @@ func MqttMainLoop(conn net.Conn) {
 			debugOutput(fmt.Sprintf("PUBLISH:%s,%d,%v,%v", topic, messageID, payload, err))
 
 			for _, clientID := range getClientListByTopic(topic) {
-				messageID = getNextMessageID(clientID)
-				data := packPUBLISH(topic, messageID, payload)
-				sendToClient(data, clientID)
+				client := getClient(clientID)
+				client.Publish(topic, payload)
 			}
 		case PUBACK:
 			debugOutput("PUBACK")
