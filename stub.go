@@ -54,10 +54,6 @@ func setClient(client *Client) {
 	clientMap[client.GetClientID()] = client
 }
 
-func getClientListByTopic(topicName string) []string {
-	return []string{}
-}
-
 func sendToClient(data []byte, clientID string) bool {
 	client := getClient(clientID)
 	sendToConn(data, client.GetConn())

@@ -57,7 +57,7 @@ func MqttMainLoop(conn net.Conn, topics *Topics) {
 			topic, messageID, payload, err := unpackPUBLISH(remaining)
 			debugOutput(fmt.Sprintf("PUBLISH:%s,%d,%v,%v", topic, messageID, payload, err))
 
-			for _, clientID := range getClientListByTopic(topic) {
+			for _, clientID := range topics.List(topic) {
 				client := getClient(clientID)
 				client.Publish(topic, payload)
 			}
