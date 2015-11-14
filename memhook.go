@@ -30,14 +30,14 @@ import (
 )
 
 type MemoryHook struct {
-    clientMap map[string]*Client
-    clientMapMutex sync.Mutex
+	clientMap      map[string]*Client
+	clientMapMutex sync.Mutex
 }
 
-func NewMemoryHook() * MemoryHook {
-    return &MemoryHook{
-        clientMap: make(map[string]*Client),
-    }
+func NewMemoryHook() *MemoryHook {
+	return &MemoryHook{
+		clientMap: make(map[string]*Client),
+	}
 }
 
 func (h *MemoryHook) Login(conn net.Conn, clientID string, loginName string, loginPassword string) byte {

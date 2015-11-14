@@ -29,22 +29,22 @@ import (
 	"net"
 )
 
-func MqttMainLoop(conn net.Conn, topics *Topics) {
+func MqttMainLoop(conn net.Conn, topics *Topics, hook *MemoryHook) {
 	command, _, remaining, err := readMessage(conn)
 	if command != CONNECT || err != nil {
 		conn.Write([]byte{CONNACK * 16, 2, 0, CONNACK_Rejected})
 		return
 	}
 	clientID, _, _, loginName, loginPassword, err := unpackCONNECT(remaining)
-	status := login(conn, clientID, loginName, loginPassword)
+	status := hook.Login(conn, clientID, loginName, loginPassword)
 	if status != CONNACK_Success {
 		conn.Write([]byte{CONNACK * 16, 2, 0, CONNACK_Rejected})
 		return
 	}
 
-	oldClient := getClient(clientID)
+	oldClient := hook.GetClient(clientID)
 	client := NewClient(clientID, conn, oldClient)
-	setClient(client)
+	hook.SetClient(client)
 	client.Send(packCONNACK(status))
 
 	for {
@@ -59,7 +59,7 @@ func MqttMainLoop(conn net.Conn, topics *Topics) {
 			debugOutput(fmt.Sprintf("PUBLISH:%s,%d,%v,%v", topic, messageID, payload, err))
 
 			for _, clientID := range topics.List(topic) {
-				target := getClient(clientID)
+				target := hook.GetClient(clientID)
 				target.Publish(topic, payload)
 			}
 		case PUBACK:
@@ -71,14 +71,14 @@ func MqttMainLoop(conn net.Conn, topics *Topics) {
 			debugOutput(fmt.Sprintf("SUBSCRIBE:%v,%d,%v", subscribe_topics, messageID, err))
 			qos := make([]byte, len(subscribe_topics))
 			for i, topicName := range subscribe_topics {
-				qos[i] = subscribe(topics, topicName, clientID)
+				qos[i] = hook.Subscribe(topics, topicName, clientID)
 			}
 			client.Send(packSUBACK(messageID, qos))
 		case UNSUBSCRIBE:
 			messageID, unsubscribe_topics, err := unpackUNSUBSCRIBE(remaining)
 			debugOutput(fmt.Sprintf("UNSUBSCRIBE:%v,%d,%v", unsubscribe_topics, messageID, err))
 			for _, topicName := range unsubscribe_topics {
-				unsubscribe(topics, topicName, clientID)
+				hook.Unsubscribe(topics, topicName, clientID)
 			}
 			client.Send(packUNSUBACK(messageID))
 		case PINGREQ:

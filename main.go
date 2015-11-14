@@ -31,10 +31,11 @@ import (
 func main() {
 	initialize_stub()
 	var topics *Topics = NewTopics()
+    var hook *MemoryHook = NewMemoryHook()
 
 	listener, _ := net.Listen("tcp", ":1883")
 	for {
 		conn, _ := listener.Accept()
-		go MqttMainLoop(conn, topics)
+		go MqttMainLoop(conn, topics, hook)
 	}
 }
