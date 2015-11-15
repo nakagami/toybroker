@@ -24,7 +24,7 @@ How to compile and execute
 Customize
 ----------------------
 
-You can wrote your application.
+You can wrote a customized broker.
 
 At first::
 
