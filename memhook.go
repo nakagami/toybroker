@@ -53,6 +53,10 @@ func (h MemoryHook) GetClient(clientID string) *Client {
 	return h.clientMap[clientID]
 }
 
+func (h MemoryHook) NewMessageBuffer(clientID string) MessageBuffer {
+	return NewMemoryMessageBuffer(clientID)
+}
+
 func (h MemoryHook) SetClient(client *Client) {
 	h.clientMapMutex.Lock()
 	defer h.clientMapMutex.Unlock()

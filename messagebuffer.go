@@ -27,6 +27,6 @@ package toybroker
 type MessageBuffer interface {
 	Set(messageID uint16, payload []byte)
 	Get(messageID uint16) []byte
-    Delete(messageID uint16)
+	Delete(messageID uint16)
 	List() []uint16
 }
