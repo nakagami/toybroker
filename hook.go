@@ -32,6 +32,7 @@ type Hook interface {
 	Login(conn net.Conn, clientID string, loginName string, loginPassword string) byte
 	Logout(clientID string)
 	GetClient(clientID string) *Client
+	GetMessageBuffer(clientID string) MessageBuffer
 	SetClient(client *Client)
 	Subscribe(topics Topics, topicName string, clientID string) byte
 	Unsubscribe(topics Topics, topicName string, clientID string)
