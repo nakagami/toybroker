@@ -91,7 +91,9 @@ func decodeRemainLength(bs []byte) int {
 func packPUBLISH(topic string, messageID uint16, payload []byte) []byte {
 	remaining := bytes.Join([][]byte{
 		str_to_bytes(topic),
+		/*  Qos=0
 		[]byte{byte(messageID / 256), byte(messageID % 256)},
+		*/
 		payload,
 	}, nil)
 	return bytes.Join([][]byte{
@@ -177,8 +179,12 @@ func unpackCONNECT(remaining []byte) (clientID string, willTopic string, willMes
 func unpackPUBLISH(remaining []byte) (topic string, messageID uint16, payload []byte, err error) {
 	ln := bytes_to_uint16(remaining[0:2])
 	topic = bytes_to_str(remaining[2 : 2+ln])
+	/*  QoS=0
 	messageID = bytes_to_uint16(remaining[2+ln : 4+ln])
 	payload = remaining[4+ln:]
+	*/
+	payload = remaining[2+ln:]
+
 	return
 }
 
