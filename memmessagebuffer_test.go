@@ -25,14 +25,42 @@ SOFTWARE.
 package toybroker
 
 import (
+	"errors"
+	"reflect"
 	"testing"
 )
 
 func TestMemMessageBuffer(t *testing.T) {
+	var err error
 	mb1 := NewMemoryMessageBuffer("foo")
 	mb2 := NewMemoryMessageBuffer("bar")
-    mb1.Set(1, []byte {1,2,3})
-    mb1.Set(2, []byte {4,5,6})
-    mb2.Set(1, []byte {7,8,9})
+	mb1.Set(1, []byte{1, 2, 3})
+	mb1.Set(2, []byte{4, 5, 6})
+	mb2.Set(1, []byte{7, 8, 9})
 
+	if len(mb1.List()) != 2 {
+		err = errors.New("mb1.List()")
+	}
+	if !reflect.DeepEqual(mb1.Get(1), []byte{1, 2, 3}) {
+		err = errors.New("mb1.Get(1)")
+	}
+	if !reflect.DeepEqual(mb1.Get(2), []byte{4, 5, 6}) {
+		err = errors.New("mb1.Get(2)")
+	}
+
+	if len(mb2.List()) != 1 {
+		err = errors.New("mb2.List()")
+	}
+
+	mb1.Delete(1)
+	if len(mb1.List()) != 1 {
+		err = errors.New("mb1.Delete()")
+	}
+	if mb1.Get(1) != nil {
+		err = errors.New("mb1.Get(1) is not nil")
+	}
+
+	if err != nil {
+		t.Error(err.Error())
+	}
 }
