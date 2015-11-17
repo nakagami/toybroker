@@ -66,7 +66,7 @@ func (h MemoryHook) GetMessageBuffer(clientID string) MessageBuffer {
 	defer h.clientMapMutex.Unlock()
 	mb, ok := h.messageBufferMap[clientID]
 	if !ok {
-		mb := NewMemoryMessageBuffer(clientID)
+		mb := NewMemoryMessageBuffer(clientID, 10)
 		h.messageBufferMap[clientID] = mb
 	}
 	return mb

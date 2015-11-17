@@ -32,8 +32,8 @@ import (
 
 func TestMemMessageBuffer(t *testing.T) {
 	var err error
-	mb1 := NewMemoryMessageBuffer("foo")
-	mb2 := NewMemoryMessageBuffer("bar")
+	mb1 := NewMemoryMessageBuffer("foo", 0)
+	mb2 := NewMemoryMessageBuffer("bar", 0)
 	mb1.Set(1, []byte{1, 2, 3})
 	mb1.Set(2, []byte{4, 5, 6})
 	mb2.Set(1, []byte{7, 8, 9})

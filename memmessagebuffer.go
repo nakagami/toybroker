@@ -32,13 +32,15 @@ import (
 type MemoryMessageBuffer struct {
 	m map[uint16][]byte
 	t map[uint16]time.Time
+	r int
 	sync.RWMutex
 }
 
-func NewMemoryMessageBuffer(clientID string) MemoryMessageBuffer {
+func NewMemoryMessageBuffer(clientID string, retrySeconds int) MemoryMessageBuffer {
 	return MemoryMessageBuffer{
 		m: make(map[uint16][]byte),
 		t: make(map[uint16]time.Time),
+		r: retrySeconds,
 	}
 }
 
