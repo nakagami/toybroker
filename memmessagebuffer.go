@@ -71,14 +71,17 @@ func (m MemoryMessageBuffer) Delete(messageID uint16) {
 	m.Lock()
 	defer m.Unlock()
 	delete(m.m, messageID)
+	delete(m.t, messageID)
 }
 
 func (m MemoryMessageBuffer) List() []uint16 {
 	m.RLock()
 	defer m.RUnlock()
 	list := make([]uint16, 0)
-	for k, _ := range m.m {
-		list = append(list, k)
+	for k, t := range m.t {
+		if int(time.Now().Sub(t).Seconds()) >= m.r {
+			list = append(list, k)
+		}
 	}
 	return list
 }
