@@ -34,6 +34,6 @@ type Hook interface {
 	GetClient(clientID string) *Client
 	GetMessageBuffer(clientID string) MessageBuffer
 	SetClient(client *Client)
-	Subscribe(topics Topics, topicName string, clientID string) byte
+	Subscribe(topics Topics, topicName string, clientID string, qos int) byte
 	Unsubscribe(topics Topics, topicName string, clientID string)
 }

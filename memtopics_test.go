@@ -34,9 +34,9 @@ import (
 func TestTopics(t *testing.T) {
 	var err error
 	topics := NewMemoryTopics()
-	topics.Add("foo/bar", "client1")
-	topics.Add("foo/bar", "client2")
-	topics.Add("foo/baz", "client1")
+	topics.Add("foo/bar", "client1", 0)
+	topics.Add("foo/bar", "client2", 0)
+	topics.Add("foo/baz", "client1", 0)
 
 	if !reflect.DeepEqual(topics.TopicList(), []string{"foo/bar", "foo/baz"}) {
 		err = errors.New("topic.TopicList()")

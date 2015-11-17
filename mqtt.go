@@ -71,7 +71,7 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 			debugOutput(fmt.Sprintf("SUBSCRIBE:%v,%d,%v", subscribe_topics, messageID, err))
 			qos := make([]byte, len(subscribe_topics))
 			for i, topicName := range subscribe_topics {
-				qos[i] = hook.Subscribe(topics, topicName, clientID)
+				qos[i] = hook.Subscribe(topics, topicName, clientID, 0)
 			}
 			client.Send(packSUBACK(messageID, qos))
 		case UNSUBSCRIBE:

@@ -30,25 +30,25 @@ import (
 )
 
 type MemoryTopics struct {
-	m map[string]map[string]bool
+	m map[string]map[string]int
 	sync.RWMutex
 }
 
 func NewMemoryTopics() MemoryTopics {
 	return MemoryTopics{
-		m: make(map[string]map[string]bool),
+		m: make(map[string]map[string]int),
 	}
 }
 
-func (t MemoryTopics) Add(topicName string, clientID string) {
+func (t MemoryTopics) Add(topicName string, clientID string, qos int) {
 	t.Lock()
 	defer t.Unlock()
 	topic, ok := t.m[topicName]
 	if !ok {
-		topic = make(map[string]bool)
+		topic = make(map[string]int)
 		t.m[topicName] = topic
 	}
-	topic[clientID] = true
+	topic[clientID] = qos
 }
 
 func (t MemoryTopics) Remove(topicName string, clientID string) {
