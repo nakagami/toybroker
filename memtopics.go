@@ -71,15 +71,16 @@ func (t MemoryTopics) TopicList() []string {
 	return list
 }
 
-func (t MemoryTopics) List(topicName string) []string {
+func (t MemoryTopics) List(topicName string) ([]string, []int) {
 	t.RLock()
 	defer t.RUnlock()
-	list := make([]string, 0)
+	clientList := make([]string, 0)
+    qosList := make([]int, 0)
 	topic, ok := t.m[topicName]
 	if ok {
 		for item := range topic {
-			list = append(list, item)
+			clientList = append(clientList, item)
 		}
 	}
-	return list
+	return clientList, qosList
 }

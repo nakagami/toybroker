@@ -28,5 +28,5 @@ type Topics interface {
 	Add(topicName string, clientID string, qos int)
 	Remove(topicName string, clientID string)
 	TopicList() []string
-	List(topicName string) []string
+	List(topicName string) ([]string, []int)
 }

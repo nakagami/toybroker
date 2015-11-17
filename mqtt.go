@@ -58,9 +58,10 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 			topic, messageID, payload, err := unpackPUBLISH(remaining)
 			debugOutput(fmt.Sprintf("PUBLISH:%s,%d,%v,%v", topic, messageID, payload, err))
 
-			for _, clientID := range topics.List(topic) {
+            clientList, qosList := topics.List(topic)
+			for i, clientID := range clientList {
 				target := hook.GetClient(clientID)
-				target.Publish(false, 0, topic, payload)
+				target.Publish(false, qosList[i], topic, payload)
 			}
 		case PUBACK:
 			debugOutput("PUBACK")

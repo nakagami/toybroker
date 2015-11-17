@@ -42,18 +42,20 @@ func TestTopics(t *testing.T) {
 		err = errors.New("topic.TopicList()")
 	}
 
-	r := topics.List("foo/bar")
+	r, _ := topics.List("foo/bar")
 	sort.Strings(r)
 	if !reflect.DeepEqual(r, []string{"client1", "client2"}) {
 		err = errors.New("topics.List(\"foo/bar\")")
 	}
 
-	if !reflect.DeepEqual(topics.List("foo/baz"), []string{"client1"}) {
+    r, _ = topics.List("foo/baz")
+	if !reflect.DeepEqual(r, []string{"client1"}) {
 		err = errors.New("topics.List(\"foo/baz\")")
 	}
 
 	topics.Remove("foo/bar", "client1")
-	if !reflect.DeepEqual(topics.List("foo/bar"), []string{"client2"}) {
+    r, _ = topics.List("foo/bar")
+	if !reflect.DeepEqual(r, []string{"client2"}) {
 		err = errors.New("Remove(\"boo/bar\", \"client1\")")
 	}
 
