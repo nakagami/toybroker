@@ -26,16 +26,19 @@ package toybroker
 
 import (
 	"sync"
+	"time"
 )
 
 type MemoryMessageBuffer struct {
 	m map[uint16][]byte
+	t map[uint16]time.Time
 	sync.RWMutex
 }
 
 func NewMemoryMessageBuffer(clientID string) MemoryMessageBuffer {
 	return MemoryMessageBuffer{
 		m: make(map[uint16][]byte),
+		t: make(map[uint16]time.Time),
 	}
 }
 
@@ -43,6 +46,13 @@ func (m MemoryMessageBuffer) Set(messageID uint16, payload []byte) {
 	m.Lock()
 	defer m.Unlock()
 	m.m[messageID] = payload
+	m.t[messageID] = time.Now()
+}
+
+func (m MemoryMessageBuffer) Reset(messageID uint16) {
+	m.Lock()
+	defer m.Unlock()
+	m.t[messageID] = time.Now()
 }
 
 func (m MemoryMessageBuffer) Get(messageID uint16) []byte {
