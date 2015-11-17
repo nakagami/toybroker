@@ -48,13 +48,13 @@ func TestTopics(t *testing.T) {
 		err = errors.New("topics.List(\"foo/bar\")")
 	}
 
-    r, _ = topics.List("foo/baz")
+	r, _ = topics.List("foo/baz")
 	if !reflect.DeepEqual(r, []string{"client1"}) {
 		err = errors.New("topics.List(\"foo/baz\")")
 	}
 
 	topics.Remove("foo/bar", "client1")
-    r, _ = topics.List("foo/bar")
+	r, _ = topics.List("foo/bar")
 	if !reflect.DeepEqual(r, []string{"client2"}) {
 		err = errors.New("Remove(\"boo/bar\", \"client1\")")
 	}
