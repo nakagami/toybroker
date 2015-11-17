@@ -60,7 +60,7 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 
 			for _, clientID := range topics.List(topic) {
 				target := hook.GetClient(clientID)
-				target.Publish(topic, payload)
+				target.Publish(false, 0, topic, payload)
 			}
 		case PUBACK:
 			debugOutput("PUBACK")

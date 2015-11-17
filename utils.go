@@ -88,16 +88,26 @@ func decodeRemainLength(bs []byte) int {
 }
 
 /* Pack return data */
-func packPUBLISH(topic string, messageID uint16, payload []byte) []byte {
-	remaining := bytes.Join([][]byte{
-		str_to_bytes(topic),
-		/*  Qos=0
-		[]byte{byte(messageID / 256), byte(messageID % 256)},
-		*/
-		payload,
-	}, nil)
+func packPUBLISH(dup bool, qos int, topic string, messageID uint16, payload []byte) []byte {
+	var remaining []byte
+	if qos == 0 {
+		remaining = bytes.Join([][]byte{
+			str_to_bytes(topic),
+			payload,
+		}, nil)
+	} else {
+		remaining = bytes.Join([][]byte{
+			str_to_bytes(topic),
+			[]byte{byte(messageID / 256), byte(messageID % 256)},
+			payload,
+		}, nil)
+	}
+	header := byte(PUBLISH*16 + qos*2)
+	if dup {
+		header += 8
+	}
 	return bytes.Join([][]byte{
-		[]byte{PUBLISH * 16},
+		[]byte{header},
 		encodeRemainLength(len(remaining)),
 		remaining,
 	}, nil)

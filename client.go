@@ -64,10 +64,10 @@ func (c *Client) getNextMessageID() uint16 {
 	return c.currentMessageID
 }
 
-func (c *Client) Publish(topic string, payload []byte) {
+func (c *Client) Publish(dup bool, qos int, topic string, payload []byte) {
 	c.Lock()
 	defer c.Unlock()
-	c.conn.Write(packPUBLISH(topic, c.getNextMessageID(), payload))
+	c.conn.Write(packPUBLISH(dup, qos, topic, c.getNextMessageID(), payload))
 }
 
 func (c *Client) Send(data []byte) {
