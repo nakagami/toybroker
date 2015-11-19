@@ -31,15 +31,17 @@ import (
 
 type Client struct {
 	clientID         string
+	loginName        string
 	conn             net.Conn
 	currentMessageID uint16
 	sync.RWMutex
 }
 
-func NewClient(id string, c net.Conn, oldClient *Client) *Client {
+func NewClient(id string, name string, c net.Conn, oldClient *Client) *Client {
 	client := &Client{
-		clientID: id,
-		conn:     c,
+		clientID:  id,
+		loginName: name,
+		conn:      c,
 	}
 	return client
 }
