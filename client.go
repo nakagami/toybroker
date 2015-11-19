@@ -47,18 +47,16 @@ func NewClient(id string, name string, c net.Conn, oldClient *Client) *Client {
 }
 
 func (c *Client) GetClientID() string {
-	c.RLock()
-	defer c.RUnlock()
 	return c.clientID
 }
 
 func (c *Client) GetConn() net.Conn {
-	c.RLock()
-	defer c.RUnlock()
 	return c.conn
 }
 
 func (c *Client) getNextMessageID() uint16 {
+	c.Lock()
+	defer c.Unlock()
 	c.currentMessageID++
 	if c.currentMessageID == 0 {
 		c.currentMessageID++
@@ -67,13 +65,9 @@ func (c *Client) getNextMessageID() uint16 {
 }
 
 func (c *Client) Publish(dup bool, qos int, topic string, payload []byte) {
-	c.Lock()
-	defer c.Unlock()
 	c.conn.Write(packPUBLISH(dup, qos, topic, c.getNextMessageID(), payload))
 }
 
 func (c *Client) Send(data []byte) {
-	c.Lock()
-	defer c.Unlock()
 	c.conn.Write(data)
 }
