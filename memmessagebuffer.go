@@ -51,7 +51,7 @@ func (m MemoryMessageBuffer) Set(messageID uint16, payload []byte) {
 	m.t[messageID] = time.Now()
 }
 
-func (m MemoryMessageBuffer) Reset(messageID uint16) {
+func (m MemoryMessageBuffer) ResetTimer(messageID uint16) {
 	m.Lock()
 	defer m.Unlock()
 	m.t[messageID] = time.Now()
