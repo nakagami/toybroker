@@ -50,6 +50,10 @@ func (c *Client) GetClientID() string {
 	return c.clientID
 }
 
+func (c *Client) GetLoginName() string {
+	return c.loginName
+}
+
 func (c *Client) GetConn() net.Conn {
 	return c.conn
 }
