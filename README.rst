@@ -2,7 +2,8 @@
 ToyBroker
 ================
 
-A MQTT broker.
+A MQTT ( http://mqtt.org ) broker written in Go.
+
 
 Restriction
 -----------------------------
