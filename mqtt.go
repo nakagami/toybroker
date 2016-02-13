@@ -67,7 +67,7 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 				target.Publish(false, qosList[i], topic, payload)
 
 				if retain {
-					debugOutput("AddRetainMessage()")
+					debugOutput(fmt.Sprintf("AddRetainMessage(%s)", topic))
 					topics.AddRetainMessage(topic, payload)
 				} else {
 					debugOutput("Not retain")
@@ -89,6 +89,8 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 			// Publish retain messages
 			for i, topicName := range subscribe_topics {
 				payload := topics.GetRetainMessage(topicName)
+				debugOutput(fmt.Sprintf("GetRetainMessage(%s)=%v", topicName, payload))
+
 				if len(payload) != 0 {
 					debugOutput(fmt.Sprintf("SendRetainMessage:%s->%v", topicName, payload))
 					client.Publish(false, int(qos[i]), topicName, payload)
