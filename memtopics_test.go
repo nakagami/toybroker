@@ -59,6 +59,31 @@ func TestTopics(t *testing.T) {
 		err = errors.New("Remove(\"boo/bar\", \"client1\")")
 	}
 
+	// Retain
+	retain := topics.GetRetainMessage("foo/bar")
+	if !reflect.DeepEqual(retain, []byte{}) {
+		err = errors.New("Retain default")
+	}
+	topics.AddRetainMessage("foo/bar", []byte{1, 2, 3})
+	retain = topics.GetRetainMessage("foo/bar")
+	if !reflect.DeepEqual(retain, []byte{1, 2, 3}) {
+		err = errors.New("Retain(\"foo/bar\", {1,2,3})")
+	}
+	topics.AddRetainMessage("foo/baz", []byte{4, 5, 6})
+	retain = topics.GetRetainMessage("foo/bar")
+	if !reflect.DeepEqual(retain, []byte{1, 2, 3}) {
+		err = errors.New("Retain(\"foo/bar\", {1,2,3})")
+	}
+	retain = topics.GetRetainMessage("foo/baz")
+	if !reflect.DeepEqual(retain, []byte{4, 5, 6}) {
+		err = errors.New("Retain(\"foo/baz\", {4,5,6})")
+	}
+	topics.AddRetainMessage("foo/bar", []byte{})
+	retain = topics.GetRetainMessage("foo/bar")
+	if len(retain) != 0 {
+		err = errors.New("Retain(\"foo/bar\", [])")
+	}
+
 	if err != nil {
 		t.Error(err.Error())
 	}

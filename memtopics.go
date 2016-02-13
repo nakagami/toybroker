@@ -38,6 +38,7 @@ type MemoryTopics struct {
 func NewMemoryTopics() MemoryTopics {
 	return MemoryTopics{
 		mapClientQoS: make(map[string]map[string]int),
+		mapRetain:    make(map[string][]byte),
 	}
 }
 
@@ -90,15 +91,15 @@ func (t MemoryTopics) List(topicName string) ([]string, []int) {
 func (t MemoryTopics) AddRetainMessage(topicName string, payload []byte) {
 	t.Lock()
 	defer t.Unlock()
-	if len(payload) == 0 {
-		t.mapRetain[topicName] = nil
-	} else {
-		t.mapRetain[topicName] = payload
-	}
+	t.mapRetain[topicName] = payload
 }
 
 func (t MemoryTopics) GetRetainMessage(topicName string) []byte {
 	t.RLock()
 	defer t.RUnlock()
-	return t.mapRetain[topicName]
+	retain, ok := t.mapRetain[topicName]
+	if ok {
+		return retain
+	}
+	return []byte{}
 }
