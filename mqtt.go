@@ -65,13 +65,9 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 					qosList[i] = 1
 				}
 				target.Publish(false, qosList[i], topic, payload)
-
-				if retain {
-					debugOutput(fmt.Sprintf("AddRetainMessage(%s)=%v", topic, payload))
-					topics.AddRetainMessage(topic, payload)
-				} else {
-					debugOutput("Not retain")
-				}
+			}
+			if retain {
+				topics.AddRetainMessage(topic, payload)
 			}
 		case PUBACK:
 			debugOutput("PUBACK")
