@@ -72,7 +72,7 @@ func (h MemoryHook) GetMessageBuffer(clientID string) MessageBuffer {
 	return mb
 }
 
-func (h MemoryHook) Subscribe(topics Topics, topicName string, clientID string, qos int) byte {
+func (h MemoryHook) Subscribe(topics Topics, topicName string, clientID string, qos int) int {
 	topics.Add(topicName, clientID, qos)
 	return 0 // QoS
 }
