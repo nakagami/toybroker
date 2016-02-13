@@ -68,8 +68,8 @@ func (c *Client) getNextMessageID() uint16 {
 	return c.currentMessageID
 }
 
-func (c *Client) Publish(dup bool, qos int, topic string, payload []byte) {
-	c.conn.Write(packPUBLISH(dup, qos, topic, c.getNextMessageID(), payload))
+func (c *Client) Publish(dup bool, qos int, retain bool, topic string, payload []byte) {
+	c.conn.Write(packPUBLISH(dup, qos, retain, topic, c.getNextMessageID(), payload))
 }
 
 func (c *Client) Send(data []byte) {

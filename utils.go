@@ -88,7 +88,7 @@ func decodeRemainLength(bs []byte) int {
 }
 
 /* Pack return data */
-func packPUBLISH(dup bool, qos int, topic string, messageID uint16, payload []byte) []byte {
+func packPUBLISH(dup bool, qos int, retain bool, topic string, messageID uint16, payload []byte) []byte {
 	var remaining []byte
 	if qos == 0 {
 		remaining = bytes.Join([][]byte{
@@ -104,7 +104,10 @@ func packPUBLISH(dup bool, qos int, topic string, messageID uint16, payload []by
 	}
 	header := byte(PUBLISH*16 + qos*2)
 	if dup {
-		header += 8
+		header &= 0x80
+	}
+	if retain {
+		header &= 0x01
 	}
 	return bytes.Join([][]byte{
 		[]byte{header},
@@ -156,10 +159,10 @@ func unpackCONNECT(remaining []byte) (clientID string, willTopic string, willMes
 	connectFlag := remaining[n]
 	usernameFlag := (connectFlag & 0x80) != 0
 	passwordFlag := (connectFlag & 0x40) != 0
-	_ = (connectFlag & 0x20) != 0      // willRetain
-	_ = byte((connectFlag / 4) & 0x04) // qos
-	_ = (connectFlag & 0x02) != 0      // will flag
-	_ = (connectFlag & 0x01) != 0      // clean session
+	_ = (connectFlag & 0x20) != 0  // willRetain
+	_ = (int(connectFlag) >> 3) & 0x04    // willQoS
+	_ = (connectFlag & 0x04) != 0        // willFlag
+	_ = (connectFlag & 0x02) != 0    // cleanSession
 	n++
 	keepAliveTime := bytes_to_uint16(remaining[n : n+2]) // keep alive time
 	debugOutput(fmt.Sprintf("unpackCONNECT:protocolVersion=%d,connectFlg=%b,keep_alive=%d", protocolVersion, connectFlag, keepAliveTime))
