@@ -275,7 +275,7 @@ func readMessage(conn net.Conn) (command int, dup bool, qos int, retain bool, fi
 	dup = (int(fixedHeader[0]>>3) & 1) == 1
 	qos = int(fixedHeader[0]>>2) & 1
 	retain = (int(fixedHeader[0]) & 1) == 1
-	debugOutput(fmt.Sprintf("readMessage():command=%d,dup=%b,qos=%d,retain=%b", command, dup, qos, retain))
+	debugOutput(fmt.Sprintf("readMessage():%d ->command=%d,dup=%b,qos=%d,retain=%b", int(fixedHeader[0]), command, dup, qos, retain))
 
 	return
 }
