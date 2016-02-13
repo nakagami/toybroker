@@ -30,8 +30,8 @@ import (
 )
 
 func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
-	command, _, _, _, _, remaining, err := readMessage(conn)
-	if command != CONNECT || err != nil {
+	connect, _, _, _, _, remaining, err := readMessage(conn)
+	if connect != CONNECT || err != nil {
 		conn.Write([]byte{CONNACK * 16, 2, 0, CONNACK_Rejected})
 		return
 	}
@@ -48,7 +48,10 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 	client.Send(packCONNACK(status))
 
 	for {
-		command, _, _, _, _, remaining, err = readMessage(conn)
+		command, _, header_qos, retain, _, remaining, err := readMessage(conn)
+		if retain {
+			debugOutput("RETAIN")
+		}
 		if err != nil {
 			hook.Logout(clientID)
 			break
@@ -61,6 +64,9 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 			clientList, qosList := topics.List(topic)
 			for i, clientID := range clientList {
 				target := hook.GetClient(clientID)
+				if qosList[i] > 0 && header_qos > 0 {
+					qosList[i] = 1
+				}
 				target.Publish(false, qosList[i], topic, payload)
 			}
 		case PUBACK:
