@@ -25,8 +25,13 @@ SOFTWARE.
 package toybroker
 
 type Topics interface {
+    // Add client and it's QoS to topic
 	Add(topicName string, clientID string, qos int)
+    // Remove client (and it's QoS) from topic
 	Remove(topicName string, clientID string)
+    // Get all topic names
 	TopicList() []string
+    // Get Client IDs and their QoS by topic name
 	List(topicName string) ([]string, []int)
+
 }
