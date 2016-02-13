@@ -238,7 +238,7 @@ func unpackUNSUBSCRIBE(remaining []byte) (messageID uint16, topics []string, err
 	return
 }
 
-func readMessage(conn net.Conn) (command int, fixedHeader []byte, remaining []byte, err error) {
+func readMessage(conn net.Conn) (command int, dup int, qos int, retain int, fixedHeader []byte, remaining []byte, err error) {
 	fixedHeader = make([]byte, 5)
 	n, err := conn.Read(fixedHeader[0:1])
 	if err != nil && n < 1 {
@@ -271,7 +271,10 @@ func readMessage(conn net.Conn) (command int, fixedHeader []byte, remaining []by
 	remaining = make([]byte, remainLength)
 	conn.Read(remaining)
 
-	command = int(fixedHeader[0] / 16)
+	command = int(fixedHeader[0] >> 4)
+	dup = int(fixedHeader[0]>>3) & 1
+	qos = int(fixedHeader[0]>>2) & 1
+	retain = int(fixedHeader[0]) & 1
 
 	return
 }

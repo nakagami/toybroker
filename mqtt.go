@@ -30,7 +30,7 @@ import (
 )
 
 func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
-	command, _, remaining, err := readMessage(conn)
+	command, _, _, _, _, remaining, err := readMessage(conn)
 	if command != CONNECT || err != nil {
 		conn.Write([]byte{CONNACK * 16, 2, 0, CONNACK_Rejected})
 		return
@@ -48,7 +48,7 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 	client.Send(packCONNACK(status))
 
 	for {
-		command, _, remaining, err = readMessage(conn)
+		command, _, _, _, _, remaining, err = readMessage(conn)
 		if err != nil {
 			hook.Logout(clientID)
 			break
