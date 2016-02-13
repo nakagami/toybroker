@@ -104,10 +104,10 @@ func packPUBLISH(dup bool, qos int, retain bool, topic string, messageID uint16,
 	}
 	header := byte(PUBLISH*16 + qos*2)
 	if dup {
-		header &= 0x80
+		header |= 0x80
 	}
 	if retain {
-//		header &= 0x01
+		header |= 0x01
 	}
 	return bytes.Join([][]byte{
 		[]byte{header},
@@ -159,10 +159,10 @@ func unpackCONNECT(remaining []byte) (clientID string, willTopic string, willMes
 	connectFlag := remaining[n]
 	usernameFlag := (connectFlag & 0x80) != 0
 	passwordFlag := (connectFlag & 0x40) != 0
-	_ = (connectFlag & 0x20) != 0  // willRetain
-	_ = (int(connectFlag) >> 3) & 0x04    // willQoS
-	_ = (connectFlag & 0x04) != 0        // willFlag
-	_ = (connectFlag & 0x02) != 0    // cleanSession
+	_ = (connectFlag & 0x20) != 0      // willRetain
+	_ = (int(connectFlag) >> 3) & 0x04 // willQoS
+	_ = (connectFlag & 0x04) != 0      // willFlag
+	_ = (connectFlag & 0x02) != 0      // cleanSession
 	n++
 	keepAliveTime := bytes_to_uint16(remaining[n : n+2]) // keep alive time
 	debugOutput(fmt.Sprintf("unpackCONNECT:protocolVersion=%d,connectFlg=%b,keep_alive=%d", protocolVersion, connectFlag, keepAliveTime))
