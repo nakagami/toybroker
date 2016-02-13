@@ -31,6 +31,7 @@ import (
 
 type MemoryTopics struct {
 	mapClientQoS map[string]map[string]int
+	mapRetain    map[string][]byte
 	sync.RWMutex
 }
 
@@ -87,8 +88,17 @@ func (t MemoryTopics) List(topicName string) ([]string, []int) {
 }
 
 func (t MemoryTopics) AddRetainMessage(topicName string, payload []byte) {
+	t.Lock()
+	defer t.Unlock()
+	if len(payload) == 0 {
+		t.mapRetain[topicName] = nil
+	} else {
+		t.mapRetain[topicName] = payload
+	}
 }
 
-func (t MemoryTopics) GetRetainMessage(topicName string) [] byte {
-    return nil
+func (t MemoryTopics) GetRetainMessage(topicName string) []byte {
+	t.RLock()
+	defer t.RUnlock()
+	return t.mapRetain[topicName]
 }
