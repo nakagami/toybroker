@@ -30,23 +30,23 @@ import (
 )
 
 type MemoryTopics struct {
-	m map[string]map[string]int
+	mapClientQoS map[string]map[string]int
 	sync.RWMutex
 }
 
 func NewMemoryTopics() MemoryTopics {
 	return MemoryTopics{
-		m: make(map[string]map[string]int),
+		mapClientQoS: make(map[string]map[string]int),
 	}
 }
 
 func (t MemoryTopics) Add(topicName string, clientID string, qos int) {
 	t.Lock()
 	defer t.Unlock()
-	topic, ok := t.m[topicName]
+	topic, ok := t.mapClientQoS[topicName]
 	if !ok {
 		topic = make(map[string]int)
-		t.m[topicName] = topic
+		t.mapClientQoS[topicName] = topic
 	}
 	topic[clientID] = qos
 }
@@ -54,7 +54,7 @@ func (t MemoryTopics) Add(topicName string, clientID string, qos int) {
 func (t MemoryTopics) Remove(topicName string, clientID string) {
 	t.Lock()
 	defer t.Unlock()
-	topic, ok := t.m[topicName]
+	topic, ok := t.mapClientQoS[topicName]
 	if ok {
 		delete(topic, clientID)
 	}
@@ -64,7 +64,7 @@ func (t MemoryTopics) TopicList() []string {
 	t.RLock()
 	defer t.RUnlock()
 	list := make([]string, 0)
-	for k, _ := range t.m {
+	for k, _ := range t.mapClientQoS {
 		list = append(list, k)
 	}
 	sort.Strings(list)
@@ -76,7 +76,7 @@ func (t MemoryTopics) List(topicName string) ([]string, []int) {
 	defer t.RUnlock()
 	clientList := make([]string, 0)
 	qosList := make([]int, 0)
-	topic, ok := t.m[topicName]
+	topic, ok := t.mapClientQoS[topicName]
 	if ok {
 		for c := range topic {
 			clientList = append(clientList, c)
