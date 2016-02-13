@@ -104,10 +104,10 @@ func packPUBLISH(dup bool, qos int, retain bool, topic string, messageID uint16,
 	}
 	header := byte(PUBLISH*16 + qos*2)
 	if dup {
-		header &= 0x80
+//		header &= 0x80
 	}
 	if retain {
-		header &= 0x01
+//		header &= 0x01
 	}
 	return bytes.Join([][]byte{
 		[]byte{header},
