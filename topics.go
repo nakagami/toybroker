@@ -25,13 +25,17 @@ SOFTWARE.
 package toybroker
 
 type Topics interface {
-    // Add client and it's QoS to topic
+	// Add client and it's QoS to topic
 	Add(topicName string, clientID string, qos int)
-    // Remove client (and it's QoS) from topic
+	// Remove client (and it's QoS) from topic
 	Remove(topicName string, clientID string)
-    // Get all topic names
+	// Get all topic names
 	TopicList() []string
-    // Get Client IDs and their QoS by topic name
+	// Get Client IDs and their QoS by topic name
 	List(topicName string) ([]string, []int)
 
+	// Add (or replace) retain message to topic
+	AddRetainMessage(topicName string, payload []byte)
+	// Get retain message from topic
+	GetRetainMassage(topicName string) []byte
 }
