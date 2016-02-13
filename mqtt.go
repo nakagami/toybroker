@@ -49,9 +49,6 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 
 	for {
 		command, _, header_qos, retain, _, remaining, err := readMessage(conn)
-		if retain {
-			debugOutput("RETAIN")
-		}
 		if err != nil {
 			hook.Logout(clientID)
 			break
@@ -68,6 +65,9 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 					qosList[i] = 1
 				}
 				target.Publish(false, qosList[i], topic, payload)
+				if retain {
+					topics.AddRetainMessage(topic, payload)
+				}
 			}
 		case PUBACK:
 			debugOutput("PUBACK")
