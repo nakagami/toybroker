@@ -85,3 +85,10 @@ func (t MemoryTopics) List(topicName string) ([]string, []int) {
 	}
 	return clientList, qosList
 }
+
+func (t MemoryTopics) AddRetainMessage(topicName string, payload []byte) {
+}
+
+func (t MemoryTopics) GetRetainMessage(topicName string) [] byte {
+    return nil
+}

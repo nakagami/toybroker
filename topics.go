@@ -37,5 +37,5 @@ type Topics interface {
 	// Add (or replace) retain message to topic
 	AddRetainMessage(topicName string, payload []byte)
 	// Get retain message from topic
-	GetRetainMassage(topicName string) []byte
+	GetRetainMessage(topicName string) []byte
 }
