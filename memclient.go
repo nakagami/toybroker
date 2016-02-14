@@ -29,7 +29,7 @@ import (
 	"sync"
 )
 
-type MemClient struct {
+type MemoryClient struct {
 	clientID         string
 	loginName        string
 	conn             net.Conn
@@ -37,27 +37,27 @@ type MemClient struct {
 	sync.RWMutex
 }
 
-func NewMemClient(id string, name string, c net.Conn) MemClient {
-	return MemClient{
+func NewMemoryClient(id string, name string, c net.Conn) MemoryClient {
+	return MemoryClient{
 		clientID:  id,
 		loginName: name,
 		conn:      c,
 	}
 }
 
-func (c MemClient) GetClientID() string {
+func (c MemoryClient) GetClientID() string {
 	return c.clientID
 }
 
-func (c MemClient) GetLoginName() string {
+func (c MemoryClient) GetLoginName() string {
 	return c.loginName
 }
 
-func (c MemClient) GetConn() net.Conn {
+func (c MemoryClient) GetConn() net.Conn {
 	return c.conn
 }
 
-func (c MemClient) getNextMessageID() uint16 {
+func (c MemoryClient) getNextMessageID() uint16 {
 	c.Lock()
 	defer c.Unlock()
 	c.currentMessageID++
@@ -67,10 +67,10 @@ func (c MemClient) getNextMessageID() uint16 {
 	return c.currentMessageID
 }
 
-func (c MemClient) Publish(dup bool, qos int, retain bool, topic string, payload []byte) {
+func (c MemoryClient) Publish(dup bool, qos int, retain bool, topic string, payload []byte) {
 	c.conn.Write(packPUBLISH(dup, qos, retain, topic, c.getNextMessageID(), payload))
 }
 
-func (c MemClient) Send(data []byte) {
+func (c MemoryClient) Send(data []byte) {
 	c.conn.Write(data)
 }
