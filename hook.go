@@ -29,11 +29,10 @@ import (
 )
 
 type Hook interface {
-	Login(conn net.Conn, clientID string, loginName string, loginPassword string) byte
+	Login(conn net.Conn, clientID string, loginName string, loginPassword string) Client
 	Logout(clientID string)
 	GetClient(clientID string) Client
 	GetMessageBuffer(clientID string) MessageBuffer
-	SetClient(clientID string, loginName string, conn net.Conn) Client
 	Subscribe(topics Topics, topicName string, clientID string, qos int) int
 	Unsubscribe(topics Topics, topicName string, clientID string)
 }
