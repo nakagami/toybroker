@@ -30,14 +30,14 @@ import (
 )
 
 type MemoryHook struct {
-	clientMap        map[string]*Client
+	clientMap        map[string]Client
 	messageBufferMap map[string]MemoryMessageBuffer
 	clientMapMutex   sync.Mutex
 }
 
 func NewMemoryHook() MemoryHook {
 	return MemoryHook{
-		clientMap:        make(map[string]*Client),
+		clientMap:        make(map[string]Client),
 		messageBufferMap: make(map[string]MemoryMessageBuffer),
 	}
 }
@@ -49,13 +49,13 @@ func (h MemoryHook) Login(conn net.Conn, clientID string, loginName string, logi
 func (h MemoryHook) Logout(clientID string) {
 }
 
-func (h MemoryHook) GetClient(clientID string) *Client {
+func (h MemoryHook) GetClient(clientID string) Client {
 	h.clientMapMutex.Lock()
 	defer h.clientMapMutex.Unlock()
 	return h.clientMap[clientID]
 }
 
-func (h MemoryHook) SetClient(client *Client) {
+func (h MemoryHook) SetClient(client Client) {
 	h.clientMapMutex.Lock()
 	defer h.clientMapMutex.Unlock()
 	h.clientMap[client.GetClientID()] = client
