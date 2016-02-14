@@ -40,10 +40,10 @@ type MemoryClient struct {
 
 func NewMemoryClient(id string, name string, c net.Conn, messages MessageBuffer) MemoryClient {
 	return MemoryClient{
-		clientID:  id,
-		loginName: name,
-		messages:  messages,
-		conn:      c,
+		clientID:      id,
+		loginName:     name,
+		messageBuffer: messages,
+		conn:          c,
 	}
 }
 

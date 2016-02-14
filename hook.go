@@ -29,7 +29,7 @@ import (
 )
 
 type Hook interface {
-	Login(conn net.Conn, clientID string, loginName string, loginPassword string) Client
+	Login(conn net.Conn, clientID string, loginName string, loginPassword string) (byte, Client)
 	Logout(clientID string)
 	GetClient(clientID string) Client
 	GetMessageBuffer(clientID string) MessageBuffer
