@@ -51,7 +51,7 @@ func (h MemoryHook) Login(conn net.Conn, clientID string, loginName string, logi
 	h.clientMap[client.GetClientID()] = client
 
 	// Something long handshake
-	status := CONNACK_Success
+	status := (byte)(CONNACK_Success)
 
 	return status, client
 }
