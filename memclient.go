@@ -34,13 +34,15 @@ type MemoryClient struct {
 	loginName        string
 	conn             net.Conn
 	currentMessageID uint16
+	messageBuffer    MessageBuffer
 	sync.RWMutex
 }
 
-func NewMemoryClient(id string, name string, c net.Conn) MemoryClient {
+func NewMemoryClient(id string, name string, c net.Conn, messages MessageBuffer) MemoryClient {
 	return MemoryClient{
 		clientID:  id,
 		loginName: name,
+		messages:  messages,
 		conn:      c,
 	}
 }

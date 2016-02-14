@@ -43,9 +43,10 @@ func NewMemoryHook() MemoryHook {
 }
 
 func (h MemoryHook) Login(conn net.Conn, clientID string, loginName string, loginPassword string) Client {
-    // Something long handshake
+	// Something long handshake
 
-	client := NewMemoryClient(clientID, loginName, conn)
+	messages := NewMemoryMessageBuffer(clientID, 60)
+	client := NewMemoryClient(clientID, loginName, conn, messages)
 	h.clientMapMutex.Lock()
 	defer h.clientMapMutex.Unlock()
 	h.clientMap[client.GetClientID()] = client
