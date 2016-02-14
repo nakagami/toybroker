@@ -56,7 +56,7 @@ func (h MemoryHook) GetClient(clientID string) Client {
 }
 
 func (h MemoryHook) SetClient(clientID string, loginName string, conn net.Conn) Client {
-	client := NewClient(clientID, loginName, conn)
+	client := NewMemClient(clientID, loginName, conn)
 	h.clientMapMutex.Lock()
 	defer h.clientMapMutex.Unlock()
 	h.clientMap[client.GetClientID()] = client
