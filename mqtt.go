@@ -42,8 +42,7 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 		return
 	}
 
-	client := NewClient(clientID, loginName, conn)
-	hook.SetClient(client)
+	client := hook.SetClient(clientID, loginName, conn)
 	client.Send(packCONNACK(status))
 
 	for {

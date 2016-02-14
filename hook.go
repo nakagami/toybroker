@@ -33,7 +33,7 @@ type Hook interface {
 	Logout(clientID string)
 	GetClient(clientID string) Client
 	GetMessageBuffer(clientID string) MessageBuffer
-	SetClient(client Client)
+	SetClient(clientID string, loginName string, conn net.Conn) Client
 	Subscribe(topics Topics, topicName string, clientID string, qos int) int
 	Unsubscribe(topics Topics, topicName string, clientID string)
 }
