@@ -86,5 +86,6 @@ func (c MemoryClient) Send(data []byte) {
 func (c MemoryClient) Disconnect() {
 	c.Lock()
 	defer c.Unlock()
+	c.conn.Close()
 	c.conn = nil
 }
