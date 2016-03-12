@@ -35,8 +35,8 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 		conn.Write([]byte{CONNACK * 16, 2, 0, CONNACK_Rejected})
 		return
 	}
-	clientID, _, _, loginName, loginPassword, err := unpackCONNECT(remaining)
-	status, client := hook.Login(conn, clientID, loginName, loginPassword)
+	clientID, _, _, loginName, loginPassword, _, _, _, cleanSession, err := unpackCONNECT(remaining)
+	status, client := hook.Login(conn, clientID, loginName, loginPassword, cleanSession)
 	if client == nil {
 		conn.Write([]byte{CONNACK * 16, 2, 0, status})
 		return

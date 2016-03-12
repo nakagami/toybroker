@@ -42,7 +42,7 @@ func NewMemoryHook() MemoryHook {
 	}
 }
 
-func (h MemoryHook) Login(conn net.Conn, clientID string, loginName string, loginPassword string) (byte, Client) {
+func (h MemoryHook) Login(conn net.Conn, clientID string, loginName string, loginPassword string, cleanSession bool) (byte, Client) {
 
 	messages := NewMemoryMessageBuffer(clientID, 60)
 	client := NewMemoryClient(clientID, loginName, conn, messages)

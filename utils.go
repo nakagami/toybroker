@@ -152,17 +152,17 @@ func packPINGRESP() []byte {
 
 /* Unpack recieve data */
 
-func unpackCONNECT(remaining []byte) (clientID string, willTopic string, willMessage string, loginName string, loginPassword string, err error) {
+func unpackCONNECT(remaining []byte) (clientID string, willTopic string, willMessage string, loginName string, loginPassword string, willRetain bool, willQoS int, willFlag bool, cleanSession bool, err error) {
 	n := 2 + int(bytes_to_uint16(remaining[0:2]))
 	protocolVersion := int(remaining[n])
 	n++
 	connectFlag := remaining[n]
 	usernameFlag := (connectFlag & 0x80) != 0
 	passwordFlag := (connectFlag & 0x40) != 0
-	_ = (connectFlag & 0x20) != 0      // willRetain
-	_ = (int(connectFlag) >> 3) & 0x04 // willQoS
-	_ = (connectFlag & 0x04) != 0      // willFlag
-	_ = (connectFlag & 0x02) != 0      // cleanSession
+	willRetain = (connectFlag & 0x20) != 0
+	willQoS = (int(connectFlag) >> 3) & 0x04
+	willFlag = (connectFlag & 0x04) != 0
+	cleanSession = (connectFlag & 0x02) != 0
 	n++
 	keepAliveTime := bytes_to_uint16(remaining[n : n+2]) // keep alive time
 	debugOutput(fmt.Sprintf("unpackCONNECT:protocolVersion=%d,connectFlg=%b,keep_alive=%d", protocolVersion, connectFlag, keepAliveTime))
