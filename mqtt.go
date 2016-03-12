@@ -66,6 +66,9 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 			if retain {
 				topics.AddRetainMessage(topic, payload)
 			}
+			if header_qos == 1 {
+				conn.Write([]byte{PUBACK * 16, 2, byte(messageID >> 8), byte(messageID & 0xFF)})
+			}
 		case PUBACK:
 			debugOutput("PUBACK")
 		case PUBREL:
