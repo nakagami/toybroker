@@ -32,7 +32,7 @@ import (
 type MemoryMessageBuffer struct {
 	m map[uint16][]byte
 	t map[uint16]time.Time
-	r int
+	retry int
 	sync.RWMutex
 }
 
@@ -40,7 +40,7 @@ func NewMemoryMessageBuffer(clientID string, retrySeconds int) MemoryMessageBuff
 	return MemoryMessageBuffer{
 		m: make(map[uint16][]byte),
 		t: make(map[uint16]time.Time),
-		r: retrySeconds,
+		retry: retrySeconds,
 	}
 }
 
@@ -79,7 +79,7 @@ func (m MemoryMessageBuffer) List() []uint16 {
 	defer m.RUnlock()
 	list := make([]uint16, 0)
 	for k, t := range m.t {
-		if int(time.Now().Sub(t).Seconds()) >= m.r {
+		if int(time.Now().Sub(t).Seconds()) >= m.retry {
 			list = append(list, k)
 		}
 	}
