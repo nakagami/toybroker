@@ -56,7 +56,7 @@ func (h MemoryHook) Login(conn net.Conn, clientID string, loginName string, logi
 	return status, client
 }
 
-func (h MemoryHook) Logout(clientID string) {
+func (h MemoryHook) Disconnect(clientID string) {
 	h.GetClient(clientID).Disconnect()
 }
 

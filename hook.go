@@ -30,7 +30,7 @@ import (
 
 type Hook interface {
 	Login(conn net.Conn, clientID string, loginName string, loginPassword string) (byte, Client)
-	Logout(clientID string)
+	Disconnect(clientID string)
 	GetClient(clientID string) Client
 	GetMessageBuffer(clientID string) MessageBuffer
 	Subscribe(topics Topics, topicName string, clientID string, qos int) int

@@ -47,7 +47,7 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 	for {
 		command, _, header_qos, retain, _, remaining, err := readMessage(conn)
 		if err != nil {
-			hook.Logout(clientID)
+			hook.Disconnect(clientID)
 			break
 		}
 		switch command {
@@ -102,11 +102,11 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 			client.Send(packPINGRESP())
 		case DISCONNECT:
 			debugOutput("DISCONNECT")
-			hook.Logout(clientID)
+			hook.Disconnect(clientID)
 			break
 		default:
 			debugOutput("Invalid Command")
-			hook.Logout(clientID)
+			hook.Disconnect(clientID)
 			break
 		}
 	}

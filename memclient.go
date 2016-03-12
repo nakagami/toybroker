@@ -70,9 +70,9 @@ func (c MemoryClient) getNextMessageID() uint16 {
 }
 
 func (c MemoryClient) Publish(dup bool, qos int, retain bool, topic string, messageID uint16, payload []byte) {
-    if messageID == 0 {
-	    messageID = c.getNextMessageID()
-    }
+	if messageID == 0 {
+		messageID = c.getNextMessageID()
+	}
 	if c.conn != nil {
 		c.conn.Write(packPUBLISH(dup, qos, retain, topic, messageID, payload))
 	}
