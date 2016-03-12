@@ -8,7 +8,10 @@ A MQTT ( http://mqtt.org ) broker written in Go.
 Restriction
 -----------------------------
 
-Only support QoS=0.
+- Only support QoS=0.
+- Not support Clean Session at CONNECT.
+- Not support Will Retain, Will QoS, Will Flag ad CONNECT.
+- Not support wildcard subscribe.
 
 
 How to compile and execute
