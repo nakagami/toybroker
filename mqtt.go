@@ -52,7 +52,7 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 		}
 		switch command {
 		case PUBLISH:
-			topic, messageID, payload, err := unpackPUBLISH(remaining)
+			topic, messageID, payload, err := unpackPUBLISH(header_qos, remaining)
 			debugOutput(fmt.Sprintf("PUBLISH:%s,%d,%v,%v", topic, messageID, payload, err))
 
 			clientList, qosList := topics.List(topic)

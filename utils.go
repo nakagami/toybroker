@@ -189,14 +189,15 @@ func unpackCONNECT(remaining []byte) (clientID string, willTopic string, willMes
 	return
 }
 
-func unpackPUBLISH(remaining []byte) (topic string, messageID uint16, payload []byte, err error) {
+func unpackPUBLISH(qos int, remaining []byte) (topic string, messageID uint16, payload []byte, err error) {
 	ln := bytes_to_uint16(remaining[0:2])
 	topic = bytes_to_str(remaining[2 : 2+ln])
-	/*  QoS=0
-	messageID = bytes_to_uint16(remaining[2+ln : 4+ln])
-	payload = remaining[4+ln:]
-	*/
-	payload = remaining[2+ln:]
+	if qos == 0 {
+		payload = remaining[2+ln:]
+	} else {
+		messageID = bytes_to_uint16(remaining[2+ln : 4+ln])
+		payload = remaining[4+ln:]
+	}
 
 	return
 }
