@@ -70,7 +70,9 @@ func MqttMainLoop(conn net.Conn, topics Topics, hook Hook) {
 				conn.Write([]byte{PUBACK * 16, 2, byte(messageID >> 8), byte(messageID & 0xFF)})
 			}
 		case PUBACK:
-			debugOutput("PUBACK")
+			messageID, err := unpackPUBACK(remaining)
+			debugOutput(fmt.Sprintf("PUBACK:%d,%v", messageID, err))
+			hook.GetClient(clientID).DeleteMessage(messageID)
 		case PUBREL:
 			debugOutput("PUBREL")
 		case SUBSCRIBE:

@@ -81,6 +81,10 @@ func (c MemoryClient) Publish(dup bool, qos int, retain bool, topic string, mess
 	}
 }
 
+func (c MemoryClient) DeleteMessage(messageID uint16) {
+	c.messageBuffer.Delete(messageID)
+}
+
 func (c MemoryClient) Send(data []byte) {
 	c.conn.Write(data)
 }
