@@ -70,7 +70,13 @@ func (c MemoryClient) getNextMessageID() uint16 {
 }
 
 func (c MemoryClient) Publish(dup bool, qos int, retain bool, topic string, payload []byte) {
-	c.conn.Write(packPUBLISH(dup, qos, retain, topic, c.getNextMessageID(), payload))
+	messageID := c.getNextMessageID()
+	if c.conn != nil {
+		c.conn.Write(packPUBLISH(dup, qos, retain, topic, messageID, payload))
+	}
+	if qos == 1 {
+		c.messageBuffer.Set(messageID, payload)
+	}
 }
 
 func (c MemoryClient) Send(data []byte) {
