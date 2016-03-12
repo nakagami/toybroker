@@ -52,6 +52,11 @@ func TestMemMessageBuffer(t *testing.T) {
 		err = errors.New("mb2.List()")
 	}
 
+	mb2.SetRetrySeconds(3600)
+	if len(mb2.List()) == 0 {
+		err = errors.New("mb2.SetRetrySeconds()")
+	}
+
 	mb1.Delete(1)
 	if len(mb1.List()) != 1 {
 		err = errors.New("mb1.Delete()")

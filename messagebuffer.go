@@ -25,6 +25,7 @@ SOFTWARE.
 package toybroker
 
 type MessageBuffer interface {
+	SetRetrySeconds(retrySeconds int)
 	Set(messageID uint16, payload []byte)
 	ResetTimer(messageID uint16)
 	Get(messageID uint16) []byte
