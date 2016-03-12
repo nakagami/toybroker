@@ -69,8 +69,10 @@ func (c MemoryClient) getNextMessageID() uint16 {
 	return c.currentMessageID
 }
 
-func (c MemoryClient) Publish(dup bool, qos int, retain bool, topic string, payload []byte) {
-	messageID := c.getNextMessageID()
+func (c MemoryClient) Publish(dup bool, qos int, retain bool, topic string, messageID uint16, payload []byte) {
+    if messageID == 0 {
+	    messageID = c.getNextMessageID()
+    }
 	if c.conn != nil {
 		c.conn.Write(packPUBLISH(dup, qos, retain, topic, messageID, payload))
 	}
