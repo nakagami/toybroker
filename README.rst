@@ -4,6 +4,8 @@ ToyBroker
 
 A MQTT ( http://mqtt.org ) broker written in Go.
 
+- http://public.dhe.ibm.com/software/dw/webservices/ws-mqtt/mqtt-v3r1.html
+
 
 Restriction
 -----------------------------
