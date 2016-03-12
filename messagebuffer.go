@@ -30,5 +30,6 @@ type MessageBuffer interface {
 	ResetTimer(messageID uint16)
 	Get(messageID uint16) []byte
 	Delete(messageID uint16)
+	DeleteAll()
 	List() []uint16
 }

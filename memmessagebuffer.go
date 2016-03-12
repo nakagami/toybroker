@@ -80,6 +80,13 @@ func (m MemoryMessageBuffer) Delete(messageID uint16) {
 	delete(m.t, messageID)
 }
 
+func (m MemoryMessageBuffer) DeleteAll() {
+	m.Lock()
+	defer m.Unlock()
+	m.m = make(map[uint16][]byte)
+	m.t = make(map[uint16]time.Time)
+}
+
 func (m MemoryMessageBuffer) List() []uint16 {
 	m.RLock()
 	defer m.RUnlock()
