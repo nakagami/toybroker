@@ -82,3 +82,9 @@ func (c MemoryClient) Publish(dup bool, qos int, retain bool, topic string, payl
 func (c MemoryClient) Send(data []byte) {
 	c.conn.Write(data)
 }
+
+func (c MemoryClient) Disconnect() {
+	c.Lock()
+	defer c.Unlock()
+	c.conn = nil
+}
