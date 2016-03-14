@@ -24,6 +24,8 @@ SOFTWARE.
 
 package toybroker
 
+import "strings"
+
 type Topics interface {
 	// Add client and it's QoS to topic
 	Add(topicName string, clientID string, qos int)
@@ -40,9 +42,14 @@ type Topics interface {
 	GetRetainMessage(topicName string) []byte
 }
 
+func HasTopicWildCard(pat string) bool {
+	return strings.Contains("#", pat) || strings.Contains("+", pat)
+}
+
 func TopicMatchList(pat string, topicList []string) []string {
 	// TODO
 	matchList := make([]string, 0, len(topicList))
+
 	for _, topicName := range topicList {
 		if pat == topicName {
 			matchList = append(matchList, topicName)

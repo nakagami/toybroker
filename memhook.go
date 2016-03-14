@@ -79,7 +79,7 @@ func (h MemoryHook) GetMessageBuffer(clientID string) MessageBuffer {
 
 func (h MemoryHook) Subscribe(topics Topics, pat string, clientID string, qos int) int {
 	topicNames := TopicMatchList(pat, topics.TopicList())
-	if len(topicNames) == 0 {
+	if len(topicNames) == 0 && !HasTopicWildCard(pat) {
 		topics.Add(pat, clientID, qos)
 	} else {
 		for _, topicName := range topicNames {
