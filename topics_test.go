@@ -36,7 +36,7 @@ func TestTopicMatchList(t *testing.T) {
 	topicList = []string{"foo/bar", "foo/baz", "foo/bar/baz"}
 
 	matchList := TopicMatchList("foo/bar", topicList)
-	if len(matchList) != 0 {
+	if len(matchList) != 1 {
 		err = errors.New("dummy")
 	}
 

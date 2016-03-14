@@ -43,6 +43,11 @@ type Topics interface {
 func TopicMatchList(pat string, topicList []string) []string {
 	// TODO
 	matchList := make([]string, 0, len(topicList))
+	for _, topicName := range topicList {
+		if pat == topicName {
+			matchList = append(matchList, topicName)
+		}
+	}
 
 	return matchList
 }
