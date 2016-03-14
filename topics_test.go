@@ -1,7 +1,7 @@
 /*******************************************************************************
 The MIT License (MIT)
 
-Copyright (c) 2015 Hajime Nakagami
+Copyright (c) 2016 Hajime Nakagami
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,25 +24,24 @@ SOFTWARE.
 
 package toybroker
 
-type Topics interface {
-	// Add client and it's QoS to topic
-	Add(topicName string, clientID string, qos int)
-	// Remove client (and it's QoS) from topic
-	Remove(topicName string, clientID string)
-	// Get all topic names
-	TopicList() []string
-	// Get Client IDs and their QoS by topic name
-	List(topicName string) ([]string, []int)
+import (
+	"errors"
+	"testing"
+)
 
-	// Add (or replace) retain message to topic
-	AddRetainMessage(topicName string, payload []byte)
-	// Get retain message from topic
-	GetRetainMessage(topicName string) []byte
-}
+func TestTopicMatchList(t *testing.T) {
+	var topicList []string
+	var err error
 
-func TopicMatchList(pat string, topicList []string) []string {
-	// TODO
-	matchList := make([]string, 0, len(topicList))
+	topicList = []string{"foo/bar", "foo/baz", "foo/bar/baz"}
 
-	return matchList
+	matchList := TopicMatchList("foo/bar", topicList)
+	if len(matchList) != 0 {
+		err = errors.New("dummy")
+	}
+
+	if err != nil {
+		t.Error(err.Error())
+	}
+
 }
