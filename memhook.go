@@ -77,8 +77,15 @@ func (h MemoryHook) GetMessageBuffer(clientID string) MessageBuffer {
 	return mb
 }
 
-func (h MemoryHook) Subscribe(topics Topics, topicName string, clientID string, qos int) int {
-	topics.Add(topicName, clientID, qos)
+func (h MemoryHook) Subscribe(topics Topics, pat string, clientID string, qos int) int {
+	topicNames := TopicMatchList(pat, topics.TopicList())
+	if len(topicNames) == 0 {
+		topics.Add(pat, clientID, qos)
+	} else {
+		for _, topicName := range topicNames {
+			topics.Add(topicName, clientID, qos)
+		}
+	}
 	return 0 // QoS
 }
 
